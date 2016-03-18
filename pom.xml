@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.elasticsearch.plugin</groupId>
+    <artifactId>analysis-benz</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Es: Plugin: Analysis: Benz</name>
+    <description>Benz Analyzer for ElasticSearch</description>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/wxingyl/search-commons.git</connection>
+        <developerConnection>scm:git:https://github.com/wxingyl/search-commons.git</developerConnection>
+        <url>https://github.com/wxingyl/search-commons</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/wxingyl/search-commons.issues</url>
+    </issueManagement>
+    <developers>
+        <developer>
+            <name>Xingxing Wang</name>
+            <email>xingxing.wang@live.com</email>
+            <organization>tqmall</organization>
+            <organizationUrl>http://www.tqmall.com</organizationUrl>
+            <roles>
+                <role>owner</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <elasticsearch.version>2.2.0</elasticsearch.version>
+        <commons-nlp.version>1.0-SNAPSHOT</commons-nlp.version>
+        <junit.version>4.12</junit.version>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <elasticsearch.plugin.jvm>true</elasticsearch.plugin.jvm>
+        <elasticsearch.plugin.site>false</elasticsearch.plugin.site>
+        <elasticsearch.plugin.name>elasticsearch-analysis-ik</elasticsearch.plugin.name>
+        <elasticsearch.plugin.classname>org.elasticsearch.plugin.analysis.benz.AnalysisBenzPlugin
+        </elasticsearch.plugin.classname>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tqmall.search</groupId>
+            <artifactId>commons-nlp</artifactId>
+            <version>${commons-nlp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${maven.compiler.target}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>${project.build.directory}/releases/</outputDirectory>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assemblies/plugin.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>tqmall-snapshots</id>
+            <name>tqmall snapshots</name>
+            <url>http://build.tqmall.com/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>tqmall-releases</id>
+            <name>tqmall releases</name>
+            <url>http://build.tqmall.com/nexus/content/repositories/releases</url>
+        </repository>
+    </distributionManagement>
+
+</project>
