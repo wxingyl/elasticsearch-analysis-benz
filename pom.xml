@@ -41,22 +41,26 @@
     </developers>
 
     <properties>
-        <elasticsearch.version>2.2.0</elasticsearch.version>
+        <es.version>2.2.0</es.version>
         <commons-nlp.version>1.0-SNAPSHOT</commons-nlp.version>
         <junit.version>4.12</junit.version>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <elasticsearch.plugin.jvm>true</elasticsearch.plugin.jvm>
-        <elasticsearch.plugin.site>false</elasticsearch.plugin.site>
-        <elasticsearch.plugin.name>elasticsearch-analysis-ik</elasticsearch.plugin.name>
-        <elasticsearch.plugin.classname>org.elasticsearch.plugin.analysis.benz.AnalysisBenzPlugin
-        </elasticsearch.plugin.classname>
+        <es.plugin.jvm>true</es.plugin.jvm>
+        <es.plugin.site>false</es.plugin.site>
+        <es.plugin.name>benz</es.plugin.name>
+        <es.plugin.classname>org.elasticsearch.plugin.analysis.benz.AnalysisBenzPlugin</es.plugin.classname>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>${elasticsearch.version}</version>
+            <version>${es.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-smartcn</artifactId>
+            <version>5.4.1</version>
         </dependency>
         <dependency>
             <groupId>com.tqmall.search</groupId>
