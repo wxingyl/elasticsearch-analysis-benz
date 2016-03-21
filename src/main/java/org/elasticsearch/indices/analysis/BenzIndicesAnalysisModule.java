@@ -1,6 +1,6 @@
 package org.elasticsearch.indices.analysis;
 
-import com.tqmall.search.benz.Lexicon;
+import com.tqmall.search.benz.BenzConfig;
 import org.elasticsearch.common.inject.AbstractModule;
 
 /**
@@ -12,7 +12,7 @@ public class BenzIndicesAnalysisModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(BenzConfig.class).asEagerSingleton();
         bind(BenzIndicesAnalysis.class).asEagerSingleton();
-        bind(Lexicon.class).asEagerSingleton();
     }
 }

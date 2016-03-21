@@ -1,5 +1,6 @@
 package org.elasticsearch.indices.analysis;
 
+import com.tqmall.search.benz.BenzConfig;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
@@ -12,7 +13,8 @@ import org.elasticsearch.common.settings.Settings;
 public class BenzIndicesAnalysis extends AbstractComponent {
 
     @Inject
-    public BenzIndicesAnalysis(Settings settings, IndicesAnalysisService indicesAnalysisService) {
+    public BenzIndicesAnalysis(Settings settings, BenzConfig config,
+                               IndicesAnalysisService indicesAnalysisService) {
         super(settings);
 
     }
