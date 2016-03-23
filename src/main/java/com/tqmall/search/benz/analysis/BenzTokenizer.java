@@ -1,4 +1,4 @@
-package com.tqmall.search.benz;
+package com.tqmall.search.benz.analysis;
 
 import com.tqmall.search.commons.analyzer.TokenType;
 import com.tqmall.search.commons.match.Hit;
@@ -12,6 +12,7 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.analysis.util.SegmentingTokenizerBase;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 
+import java.io.IOException;
 import java.text.BreakIterator;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +61,12 @@ public class BenzTokenizer extends SegmentingTokenizerBase {
             keywordAtt.setKeyword(type != TokenType.EN && type != TokenType.EN_MIX);
             return true;
         }
+    }
+
+    @Override
+    public void reset() throws IOException {
+        super.reset();
+        tokens = null;
     }
 
     public static class Factory implements TokenizerFactory {

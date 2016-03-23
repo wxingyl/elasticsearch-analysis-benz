@@ -1,5 +1,6 @@
-package com.tqmall.search.benz;
+package com.tqmall.search.benz.analysis;
 
+import com.tqmall.search.benz.Config;
 import com.tqmall.search.commons.nlp.Segment;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -35,6 +36,7 @@ public class BenzAnalyzer extends Analyzer {
         final Tokenizer tokenizer = new BenzTokenizer(segment);
         TokenStream result = tokenizer;
         // LowerCaseFilter is not needed, BenzCjkCharFilter has convert to low
+        //TODO 这儿stem词的过滤是否可以做成可配置的
         result = new PorterStemFilter(result);
         result = new StopFilter(result, config.getStopWords());
         return new TokenStreamComponents(tokenizer, result);

@@ -1,4 +1,4 @@
-package com.tqmall.search.benz;
+package com.tqmall.search.benz.analysis;
 
 import com.tqmall.search.commons.nlp.SegmentFilters;
 import org.elasticsearch.index.analysis.CharFilterFactory;

@@ -1,4 +1,4 @@
-package org.slf4j.impl;
+package com.tqmall.search.benz;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;

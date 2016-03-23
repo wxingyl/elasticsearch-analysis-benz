@@ -16,17 +16,8 @@ benz.analyzer:
     cjk_analyzer: max
     merge_num_quantifier: true
     append_num_quantifier: false
-  - name: big
-    ascii_max: true
-    cjk_analyzer: max
-    merge_num_quantifier: true
-    append_num_quantifier: false
-benz.test:
-    name: index
-    ascii_max: false
-    parse_decimal: true
-    parse_en_mix: true
-    en_mix_append: true
-    cjk_analyzer: full
-    merge_num_quantifier: true
-    append_num_quantifier: true
+#  - name: big
+#    ascii_max: true
+#    cjk_analyzer: max
+#    merge_num_quantifier: true
+#    append_num_quantifier: false

@@ -1,4 +1,4 @@
-package org.elasticsearch.indices.analysis;
+package com.tqmall.search.benz.analysis;
 
 import com.tqmall.search.benz.Config;
 import org.elasticsearch.common.inject.AbstractModule;

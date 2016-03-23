@@ -3,10 +3,10 @@ package com.tqmall.search.benz;
 import com.tqmall.search.commons.analyzer.CjkAnalyzer;
 import com.tqmall.search.commons.analyzer.CjkLexiconFactory;
 import com.tqmall.search.commons.analyzer.MaxAsciiAnalyzer;
+import com.tqmall.search.commons.analyzer.StopWords;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import com.tqmall.search.commons.trie.RootNodeType;
 import com.tqmall.search.commons.utils.SearchStringUtils;
-import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.common.settings.Settings;
@@ -47,13 +47,13 @@ public class Config {
      * 配置值为es/elasticsearch/es.yml/elasticsearch.yml 中的任意一个, 则从es主配置文件[elasticsearch.yml]中读取
      * 推荐单独文件
      */
-    static final String CONFIG_FILE_PATH_KEY = "benz.lexicon.file";
+    static final String CONFIG_FILE_PATH_KEY = "benz.conf";
 
     /**
      * 词库文件路径配置key, 可以为文件夹
      * 如果配置项值为一个文件夹, 则加载该文件夹下面, 以"words"为前缀, 并且".dic"为后缀的所有词库文件
      */
-    static final String LEXICON_FILE_PATH_KEY = "benz.lexicon.file";
+    static final String LEXICON_FILE_PATH_KEY = "benz.lexicon";
 
     /**
      * 词库文件是否只包含中文cjk字符, 默认true
@@ -61,7 +61,7 @@ public class Config {
     static final String LEXICON_ONLY_CJK_KEY = "benz.lexicon.only_cjk";
 
     /**
-     * 默认的词库文件名, 没有配置{@link #LEXICON_FILE_PATH_KEY} 则读取Es提供的默认配置路径
+     * 默认的配置文件名, 没有配置{@link #CONFIG_FILE_PATH_KEY}, 则读取这个配置文件
      */
     static final String DEFAULT_CONFIG_FILE_NAME = "config.yml";
 
@@ -191,8 +191,8 @@ public class Config {
         value = configSettings.get(LEXICON_FILE_PATH_KEY);
         this.cjkLexicon = loadLexicon(configSettings, value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME)
                 : Paths.get(value));
-        this.segmentConfigList = Collections.unmodifiableList(Analyzer.parse(settings));
-        stopWords = new CharArraySet(StopFilter.makeStopSet(), true);
+        this.segmentConfigList = Collections.unmodifiableList(Analyzer.parse(configSettings));
+        stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
     }
 
     /**

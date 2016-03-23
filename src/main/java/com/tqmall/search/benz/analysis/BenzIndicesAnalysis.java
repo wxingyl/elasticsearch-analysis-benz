@@ -1,8 +1,5 @@
-package org.elasticsearch.indices.analysis;
+package com.tqmall.search.benz.analysis;
 
-import com.tqmall.search.benz.BenzAnalyzer;
-import com.tqmall.search.benz.BenzCjkCharFilter;
-import com.tqmall.search.benz.BenzTokenizer;
 import com.tqmall.search.benz.Config;
 import com.tqmall.search.commons.nlp.Segment;
 import com.tqmall.search.commons.nlp.SegmentConfig;
@@ -12,6 +9,9 @@ import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.*;
+import org.elasticsearch.indices.analysis.IndicesAnalysisService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by xing on 16/3/19.
@@ -20,16 +20,20 @@ import org.elasticsearch.index.analysis.*;
  */
 public class BenzIndicesAnalysis extends AbstractComponent {
 
+    private static final Logger log = LoggerFactory.getLogger(BenzIndicesAnalysis.class);
+
     @Inject
     public BenzIndicesAnalysis(Settings settings, final Config config,
                                IndicesAnalysisService indicesAnalysisService) {
         super(settings);
         for (SegmentConfig sc : config.getSegmentConfigList()) {
-            Segment segment = sc.createSegment(config.getCjkLexicon());
-            indicesAnalysisService.analyzerProviderFactories().put(segment.getName(), new PreBuiltAnalyzerProviderFactory(segment.getName(),
-                    AnalyzerScope.INDICES, new BenzAnalyzer(config, segment)));
-            indicesAnalysisService.tokenizerFactories().put(segment.getName(),
+            final Segment segment = sc.createSegment(config.getCjkLexicon());
+            final String name = segment.getName();
+            indicesAnalysisService.analyzerProviderFactories().put(name, new PreBuiltAnalyzerProviderFactory(name,
+                    AnalyzerScope.GLOBAL, new BenzAnalyzer(config, segment)));
+            indicesAnalysisService.tokenizerFactories().put(name,
                     new PreBuiltTokenizerFactoryFactory(new BenzTokenizer.Factory(segment)));
+            log.info("add " + name + " analyzerProviderFactory and tokenizerFactory");
         }
         //添加cjk stopWord filter
         indicesAnalysisService.tokenFilterFactories().put(Config.STOP_FILTER_NAME, new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
@@ -43,8 +47,10 @@ public class BenzIndicesAnalysis extends AbstractComponent {
                 return new StopFilter(tokenStream, config.getStopWords());
             }
         }));
+        log.info("add " + Config.STOP_FILTER_NAME + " tokenFilterFactory");
         //添加BenzCjkCharFilter
         indicesAnalysisService.charFilterFactories().put(BenzCjkCharFilter.NAME,
                 new PreBuiltCharFilterFactoryFactory(new BenzCjkCharFilter.Factory()));
+        log.info("add " + BenzCjkCharFilter.NAME + " tokenFilterFactory");
     }
 }

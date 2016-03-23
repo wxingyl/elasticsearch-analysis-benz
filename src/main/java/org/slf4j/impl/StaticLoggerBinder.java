@@ -1,5 +1,6 @@
 package org.slf4j.impl;
 
+import com.tqmall.search.benz.BenzLoggerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 

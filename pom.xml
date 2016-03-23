@@ -45,10 +45,9 @@
         <commons-nlp.version>1.0-SNAPSHOT</commons-nlp.version>
         <junit.version>4.12</junit.version>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <es.plugin.jvm>true</es.plugin.jvm>
-        <es.plugin.site>false</es.plugin.site>
         <es.plugin.name>analysis-benz</es.plugin.name>
-        <es.plugin.classname>org.elasticsearch.plugin.analysis.benz.AnalysisBenzPlugin</es.plugin.classname>
+        <es.plugin.jvm>true</es.plugin.jvm>
+        <es.plugin.classname>com.tqmall.search.benz.AnalysisBenzPlugin</es.plugin.classname>
     </properties>
 
     <dependencies>
@@ -57,11 +56,6 @@
             <artifactId>elasticsearch</artifactId>
             <version>${es.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-smartcn</artifactId>
-            <version>5.4.1</version>
         </dependency>
         <dependency>
             <groupId>com.tqmall.search</groupId>

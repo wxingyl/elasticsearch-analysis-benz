@@ -1,9 +1,8 @@
-package org.elasticsearch.plugin.analysis.benz;
+package com.tqmall.search.benz;
 
-import com.tqmall.search.benz.Config;
+import com.tqmall.search.benz.analysis.BenzIndicesAnalysisModule;
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.indices.analysis.BenzIndicesAnalysisModule;
 import org.elasticsearch.plugins.Plugin;
 
 import java.util.Collection;

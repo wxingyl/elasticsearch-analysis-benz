@@ -1,9 +1,10 @@
-package org.slf4j.impl;
+package com.tqmall.search.benz;
 
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.logging.jdk.JdkESLoggerFactory;
+import org.elasticsearch.plugins.Plugin;
 import org.slf4j.helpers.MarkerIgnoringBase;
 
 /**
@@ -20,8 +21,15 @@ public class BenzLogger extends MarkerIgnoringBase {
     private final static ESLoggerFactory DEFAULT_LOG_FACTORY;
 
     static {
-        DEFAULT_LOG_FACTORY = BenzLogger.class.getClassLoader().equals(ESLogger.class.getClassLoader())
-                ? new JdkESLoggerFactory() : null;
+        ESLoggerFactory factory;
+        try {
+            factory = BenzLogger.class.getClassLoader().equals(Plugin.class.getClassLoader())
+                    ? new JdkESLoggerFactory() : null;
+        } catch (RuntimeException e) {
+            //说明不是同一个classLoad
+            factory = null;
+        }
+        DEFAULT_LOG_FACTORY = factory;
     }
 
     private final ESLogger logger;

@@ -22,12 +22,6 @@
             <outputDirectory>/</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
-            <includes>
-                <include>com.tqmall.search:commons-nlp</include>
-            </includes>
-            <!--<excludes>-->
-                <!--<exclude>org.elasticsearch:elasticsearch</exclude>-->
-            <!--</excludes>-->
         </dependencySet>
     </dependencySets>
 </assembly>
