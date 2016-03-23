@@ -7,7 +7,7 @@
     <groupId>org.elasticsearch.plugin</groupId>
     <artifactId>analysis-benz</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Es: Plugin: Analysis: Benz</name>
+    <name>Plugin: Analysis: Benz</name>
     <description>Benz Analyzer for ElasticSearch</description>
 
     <licenses>
@@ -47,7 +47,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <es.plugin.jvm>true</es.plugin.jvm>
         <es.plugin.site>false</es.plugin.site>
-        <es.plugin.name>benz</es.plugin.name>
+        <es.plugin.name>analysis-benz</es.plugin.name>
         <es.plugin.classname>org.elasticsearch.plugin.analysis.benz.AnalysisBenzPlugin</es.plugin.classname>
     </properties>
 
@@ -56,6 +56,7 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>${es.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>

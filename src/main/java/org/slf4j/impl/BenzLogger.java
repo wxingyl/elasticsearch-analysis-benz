@@ -1,20 +1,33 @@
 package org.slf4j.impl;
 
 import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.logging.Loggers;
+import org.elasticsearch.common.logging.jdk.JdkESLoggerFactory;
 import org.slf4j.helpers.MarkerIgnoringBase;
 
 /**
  * Created by xing on 16/3/21.
  *
  * @author xing
+ * @see ESLoggerFactory
  */
 public class BenzLogger extends MarkerIgnoringBase {
+    /**
+     * {@link ESLogger}默认使用{@link JdkESLoggerFactory}
+     * {@link ESLoggerFactory}中默认使用jkd, 再检查是否支持log4j, 如果还没有再检查slf4j, 如果该函数执行, 则表明log4j是没有的, 所以不用考虑log4j
+     */
+    private final static ESLoggerFactory DEFAULT_LOG_FACTORY;
+
+    static {
+        DEFAULT_LOG_FACTORY = BenzLogger.class.getClassLoader().equals(ESLogger.class.getClassLoader())
+                ? new JdkESLoggerFactory() : null;
+    }
 
     private final ESLogger logger;
 
     public BenzLogger(String name) {
-        logger = Loggers.getLogger(name);
+        logger = DEFAULT_LOG_FACTORY == null ? Loggers.getLogger(name) : DEFAULT_LOG_FACTORY.newInstance(name);
     }
 
     @Override

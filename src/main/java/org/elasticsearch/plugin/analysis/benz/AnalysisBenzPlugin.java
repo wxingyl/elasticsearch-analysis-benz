@@ -1,6 +1,8 @@
 package org.elasticsearch.plugin.analysis.benz;
 
+import com.tqmall.search.benz.Config;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.indices.analysis.BenzIndicesAnalysisModule;
 import org.elasticsearch.plugins.Plugin;
 
@@ -15,18 +17,24 @@ import java.util.Collections;
  */
 public class AnalysisBenzPlugin extends Plugin {
 
+    private final Config config;
+
+    public AnalysisBenzPlugin(Settings settings) {
+        config = new Config(settings);
+    }
+
     @Override
     public String name() {
-        return "analysis-benz";
+        return Config.PLUGIN_NAME;
     }
 
     @Override
     public String description() {
-        return "benz analysis";
+        return "Benz Analyzer for ElasticSearch";
     }
 
     @Override
     public Collection<Module> nodeModules() {
-        return Collections.<Module>singletonList(new BenzIndicesAnalysisModule());
+        return Collections.<Module>singletonList(new BenzIndicesAnalysisModule(config));
     }
 }

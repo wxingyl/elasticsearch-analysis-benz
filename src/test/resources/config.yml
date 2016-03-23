@@ -1,0 +1,27 @@
+benz.analyzer.name.prefix: tq_
+benz.analyzer:
+  - name: index
+    ascii_max: false
+    parse_decimal: true
+    parse_en_mix: true
+    en_mix_append: true
+    cjk_analyzer: full
+    merge_num_quantifier: true
+    append_num_quantifier: true
+  - name: min
+    ascii_max:
+    parse_decimal: true
+    parse_en_mix: true
+    en_mix_append: true
+    cjk_analyzer: min
+    merge_num_quantifier: true
+    append_num_quantifier: true
+benz.test:
+    name: index
+    ascii_max: false
+    parse_decimal: true
+    parse_en_mix: true
+    en_mix_append: true
+    cjk_analyzer: full
+    merge_num_quantifier: true
+    append_num_quantifier: true

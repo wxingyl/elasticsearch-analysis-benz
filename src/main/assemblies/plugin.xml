@@ -25,9 +25,9 @@
             <includes>
                 <include>com.tqmall.search:commons-nlp</include>
             </includes>
-            <excludes>
-                <exclude>org.elasticsearch:elasticsearch</exclude>
-            </excludes>
+            <!--<excludes>-->
+                <!--<exclude>org.elasticsearch:elasticsearch</exclude>-->
+            <!--</excludes>-->
         </dependencySet>
     </dependencySets>
 </assembly>
