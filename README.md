@@ -1,4 +1,4 @@
-# Benz Analyzer for ElasticSearch
+# Benz Analysis for ElasticSearch
 
 ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算法识别，高度可配置, 目前还在开发中，基本的分词可用，但是添加词库等还不行~~~
 
