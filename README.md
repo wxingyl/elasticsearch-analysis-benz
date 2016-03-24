@@ -61,11 +61,18 @@ benz.analyzer:
     cjk_analyzer: min
     merge_num_quantifier: false
   - name: max
+    en_stem: k
     parse_en_mix: true
     append_en_mix: false
     cjk_analyzer: max
     merge_num_quantifier: true
     append_num_quantifier: false
+#  - name: big
+#    en_stem: porter
+#    ascii_max: true
+#    cjk_analyzer: max
+#    merge_num_quantifier: true
+#    append_num_quantifier: false
 ```
 
 `index` 尽可能多的分词，一般用于索引创建时的分词
@@ -76,17 +83,18 @@ benz.analyzer:
 
 各项配置解释：
 
-|            配置key            |            解释            |   默认值   |
-| :-------------------------: | :----------------------: | :-----: |
-| `benz.analyzer.name.prefix` |         分词器名称前缀          |    空    |
-|           `name`            |      分词器名称，唯一标识分词器       |    无    |
-|         `ascii_max`         |     `ascii字符`是否最大分词      | `false` |
-|       `parse_decimal`       |         是否识别小数数字         | `true`  |
-|       `parse_en_mix`        |    是否识别英文合成词`en_mix`     | `false` |
-|       `append_en_mix`       |    识别的`en_mix`是否最为新词     | `false` |
-|       `cjk_analyzer`        | 中文分词方式`{full, min, max}` |  `min`  |
-|   `merge_num_quantifier`    |         是否合并数量词          | `false` |
-|   `append_num_quantifier`   |       合并的数量词是否作为新词       | `false` |
+|            配置key            |             解释             |   默认值   |
+| :-------------------------: | :------------------------: | :-----: |
+| `benz.analyzer.name.prefix` |          分词器名称前缀           |    空    |
+|           `name`            |       分词器名称，唯一标识分词器        |    无    |
+|         `ascii_max`         |      `ascii字符`是否最大分词       | `false` |
+|       `parse_decimal`       |          是否识别小数数字          | `true`  |
+|       `parse_en_mix`        |     是否识别英文合成词`en_mix`      | `false` |
+|       `append_en_mix`       |     识别的`en_mix`是否最为新词      | `false` |
+|       `cjk_analyzer`        |  中文分词方式`{full, min, max}`  |  `min`  |
+|   `merge_num_quantifier`    |          是否合并数量词           | `false` |
+|   `append_num_quantifier`   |        合并的数量词是否作为新词        | `false` |
+|          `en_stem`          | 英文单词stem处理，可取值`k`和`porter` |    空    |
 
 注：1. 分词器的真正名称为： `benz.analyzer.name.prefix`  + `name`
 
