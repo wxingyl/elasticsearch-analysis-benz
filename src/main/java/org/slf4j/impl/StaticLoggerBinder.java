@@ -1,13 +1,19 @@
 package org.slf4j.impl;
 
 import com.tqmall.search.benz.BenzLoggerFactory;
+import org.elasticsearch.common.logging.ESLogger;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
 /**
  * Created by xing on 16/3/21.
+ * elasticsearch 封装了logger工具类{@link ESLogger}, 默认使用的是jdk log
+ * 该项目依赖com.tqmall.search:commons-nlp, 使用slf4j, 为了保证commons-lang中的log也能正常打出来, 在这儿实现StaticLoggerBinder,
+ * 作为Adapter, {@link ILoggerFactory}生产的对象还是{@link ESLogger}
  *
  * @author xing
+ * @see BenzLoggerFactory
+ * @see com.tqmall.search.benz.BenzLogger
  */
 public class StaticLoggerBinder implements LoggerFactoryBinder {
 

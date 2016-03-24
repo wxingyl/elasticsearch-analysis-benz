@@ -220,8 +220,7 @@ public class Config {
         String value = settings.get(CONFIG_FILE_PATH_KEY);
         final Path benzConfigDirPath = env.configFile().resolve(PLUGIN_NAME);
         final Settings configSettings;
-        if ("es".equalsIgnoreCase(value) || "es.yml".equalsIgnoreCase(value)
-                || "elasticsearch".equalsIgnoreCase(value) || "elasticsearch.yml".equalsIgnoreCase(value)) {
+        if ("es".equalsIgnoreCase(value) || "elasticsearch".equalsIgnoreCase(value)) {
             configSettings = settings;
         } else {
             Path configPath = value == null ? benzConfigDirPath.resolve(DEFAULT_CONFIG_FILE_NAME)
