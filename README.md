@@ -104,5 +104,5 @@ benz.analyzer:
 
 ​	4. `ascii_max`指无间隔的英文字符，数字(包括小数)认为一个词，比如`DG123`,  `HD5000`等都为一个词, `24.5benz-analyzerv1.0`分词结果为: `24.5benz`, `analyzerv1.0`
 
-​	5. 具体配置详细信息直接看代码[Config.java](src/main/java/com/tqmall/search/benz/Config.java)，代码是最好的文档
+​	5. 具体配置详细信息直接看代码[Config.java](server/src/main/java/com/tqmall/search/benz/Config.java)，代码是最好的文档
 

@@ -23,7 +23,7 @@ public class ConfigTest {
                 .loadFromPath(configPath)
                 .build();
         List<Config.Analysis> list = Config.Analysis.parse(settings);
-        Assert.assertEquals(2, list.size());
+        Assert.assertEquals(4, list.size());
         for (SegmentConfig s : list) {
             System.out.println(s);
         }
