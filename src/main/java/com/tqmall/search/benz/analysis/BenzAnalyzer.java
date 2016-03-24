@@ -6,7 +6,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.StopFilter;
-import org.apache.lucene.analysis.en.PorterStemFilter;
 
 import java.io.Reader;
 
@@ -36,8 +35,10 @@ public class BenzAnalyzer extends Analyzer {
         final Tokenizer tokenizer = new BenzTokenizer(segment);
         TokenStream result = tokenizer;
         // LowerCaseFilter is not needed, BenzCjkCharFilter has convert to low
-        //TODO 这儿stem词的过滤是否可以做成可配置的
-        result = new PorterStemFilter(result);
+        Config.EnStemType enStem = config.getSegmentConfig(segment.getName()).getEnStem();
+        if (enStem != null) {
+            result = enStem.wrapper(result);
+        }
         result = new StopFilter(result, config.getStopWords());
         return new TokenStreamComponents(tokenizer, result);
     }

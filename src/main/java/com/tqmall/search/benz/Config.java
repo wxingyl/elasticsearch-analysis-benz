@@ -1,12 +1,13 @@
 package com.tqmall.search.benz;
 
-import com.tqmall.search.commons.analyzer.CjkAnalyzer;
-import com.tqmall.search.commons.analyzer.CjkLexiconFactory;
-import com.tqmall.search.commons.analyzer.MaxAsciiAnalyzer;
-import com.tqmall.search.commons.analyzer.StopWords;
+import com.tqmall.search.commons.analyzer.*;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import com.tqmall.search.commons.trie.RootNodeType;
 import com.tqmall.search.commons.utils.SearchStringUtils;
+import org.apache.lucene.analysis.TokenFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.en.KStemFilter;
+import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.common.settings.Settings;
@@ -76,7 +77,7 @@ public class Config {
      *
      * @see SegmentConfig
      */
-    static class Analyzer {
+    public static class Analysis extends SegmentConfig {
         /**
          * 分词器配置 key
          * 必须配置
@@ -125,9 +126,14 @@ public class Config {
          * @see SegmentConfig#appendNumQuantifier
          */
         static final String APPEND_NUM_QUANTIFIER = "append_num_quantifier";
+        /**
+         * 对于英文单词,是否需要执行stem操作, 可以配置"k"和"porter", 分别使用{@link KStemFilter}和{@link PorterStemFilter}作为stem算法
+         * 不做配置则不对keyword做stem操作
+         */
+        static final String EN_STEM = "en_stem";
 
-        static SegmentConfig parse(String namePrefix, String keyPrefix, Settings settings) {
-            SegmentConfig config = new SegmentConfig(namePrefix + settings.get(keyPrefix + NAME));
+        static Analysis parse(String namePrefix, String keyPrefix, Settings settings) {
+            Analysis config = new Analysis(namePrefix + settings.get(keyPrefix + NAME));
             if (settings.getAsBoolean(keyPrefix + ASCII_MAX, false)) {
                 config.setMaxAsciiAnalyzer(true);
             } else {
@@ -147,12 +153,21 @@ public class Config {
                 config.setMergeNumQuantifier(true);
                 config.setAppendNumQuantifier(settings.getAsBoolean(keyPrefix + APPEND_NUM_QUANTIFIER, false));
             }
+            value = settings.get(keyPrefix + EN_STEM);
+            if (!SearchStringUtils.isEmpty(value)) {
+                try {
+                    config.enStem = EnStemType.valueOf(value.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("you config analyzer: " + config.getName() + ", the " + EN_STEM
+                            + " filed value: " + value + " must is \"k\" or \"porter\"");
+                }
+            }
             return config;
         }
 
-        static List<SegmentConfig> parse(Settings settings) {
+        static List<Analysis> parse(Settings settings) {
             final String namePrefix = settings.get(PREFIX_KEY, "");
-            List<SegmentConfig> segmentConfigList = new ArrayList<>();
+            List<Analysis> segmentConfigList = new ArrayList<>();
             int count = 0;
             for (; ; count++) {
                 String keyPrefix = KEY + '.' + count + '.';
@@ -165,11 +180,38 @@ public class Config {
             }
             return segmentConfigList;
         }
+
+        EnStemType enStem;
+
+        Analysis(String name) {
+            super(name);
+        }
+
+        public EnStemType getEnStem() {
+            return enStem;
+        }
+    }
+
+    public enum EnStemType {
+        K {
+            @Override
+            public TokenFilter wrapper(TokenStream input) {
+                return new KStemFilter(input);
+            }
+        },
+        PORTER {
+            @Override
+            public TokenFilter wrapper(TokenStream input) {
+                return new PorterStemFilter(input);
+            }
+        };
+
+        public abstract TokenFilter wrapper(TokenStream input);
     }
 
     private final CjkLexiconFactory cjkLexicon;
 
-    private final List<SegmentConfig> segmentConfigList;
+    private final List<Analysis> segmentConfigList;
 
     private final CharArraySet stopWords;
 
@@ -191,7 +233,7 @@ public class Config {
         value = configSettings.get(LEXICON_FILE_PATH_KEY);
         this.cjkLexicon = loadLexicon(configSettings, value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME)
                 : Paths.get(value));
-        this.segmentConfigList = Collections.unmodifiableList(Analyzer.parse(configSettings));
+        this.segmentConfigList = Collections.unmodifiableList(Analysis.parse(configSettings));
         stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
     }
 
@@ -224,8 +266,20 @@ public class Config {
         return cjkLexicon;
     }
 
-    public List<SegmentConfig> getSegmentConfigList() {
+    public List<Analysis> getSegmentConfigList() {
         return segmentConfigList;
+    }
+
+    /**
+     * 获取指定分词器名称的配置
+     */
+    public Analysis getSegmentConfig(String analyzerName) {
+        for (Analysis a : segmentConfigList) {
+            if (a.getName().equals(analyzerName)) {
+                return a;
+            }
+        }
+        throw new IllegalArgumentException("can not find analyzer named " + analyzerName);
     }
 
     public CharArraySet getStopWords() {

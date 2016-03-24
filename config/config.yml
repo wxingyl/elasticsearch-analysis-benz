@@ -11,12 +11,14 @@ benz.analyzer:
     cjk_analyzer: min
     merge_num_quantifier: false
   - name: max
+    en_stem: k
     parse_en_mix: true
     append_en_mix: false
     cjk_analyzer: max
     merge_num_quantifier: true
     append_num_quantifier: false
 #  - name: big
+#    en_stem: porter
 #    ascii_max: true
 #    cjk_analyzer: max
 #    merge_num_quantifier: true

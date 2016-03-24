@@ -6,7 +6,7 @@
 
     <groupId>org.elasticsearch.plugin</groupId>
     <artifactId>analysis-benz</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>dev-1.0-SNAPSHOT</version>
     <name>Plugin: Analysis: Benz</name>
     <description>Benz Analyzer for ElasticSearch</description>
 

@@ -2,7 +2,6 @@ package com.tqmall.search.benz.analysis;
 
 import com.tqmall.search.benz.Config;
 import com.tqmall.search.commons.nlp.Segment;
-import com.tqmall.search.commons.nlp.SegmentConfig;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.elasticsearch.common.component.AbstractComponent;
@@ -26,8 +25,8 @@ public class BenzIndicesAnalysis extends AbstractComponent {
     public BenzIndicesAnalysis(Settings settings, final Config config,
                                IndicesAnalysisService indicesAnalysisService) {
         super(settings);
-        for (SegmentConfig sc : config.getSegmentConfigList()) {
-            final Segment segment = sc.createSegment(config.getCjkLexicon());
+        for (Config.Analysis ca : config.getSegmentConfigList()) {
+            final Segment segment = ca.createSegment(config.getCjkLexicon());
             final String name = segment.getName();
             indicesAnalysisService.analyzerProviderFactories().put(name, new PreBuiltAnalyzerProviderFactory(name,
                     AnalyzerScope.GLOBAL, new BenzAnalyzer(config, segment)));
