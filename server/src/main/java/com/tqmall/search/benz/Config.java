@@ -1,5 +1,6 @@
 package com.tqmall.search.benz;
 
+import com.google.common.collect.ImmutableList;
 import com.tqmall.search.commons.analyzer.*;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import com.tqmall.search.commons.trie.RootNodeType;
@@ -215,50 +216,43 @@ public class Config {
 
     private final CharArraySet stopWords;
 
+    private final List<Path> lexiconPaths;
+
     public Config(Settings settings) {
         Environment env = new Environment(settings);
         String value = settings.get(CONFIG_FILE_PATH_KEY);
         final Path benzConfigDirPath = env.configFile().resolve(PLUGIN_NAME);
-        final Settings configSettings;
-        if ("es".equalsIgnoreCase(value) || "elasticsearch".equalsIgnoreCase(value)) {
-            configSettings = settings;
-        } else {
-            Path configPath = value == null ? benzConfigDirPath.resolve(DEFAULT_CONFIG_FILE_NAME)
+        if (!"es".equalsIgnoreCase(value) && !"elasticsearch".equalsIgnoreCase(value)) {
+            Path configPath = SearchStringUtils.isEmpty(value) ? benzConfigDirPath.resolve(DEFAULT_CONFIG_FILE_NAME)
                     : Paths.get(value);
-            configSettings = Settings.builder()
+            settings = Settings.builder()
                     .loadFromPath(configPath)
                     .build();
         }
-        value = configSettings.get(LEXICON_FILE_PATH_KEY);
-        this.cjkLexicon = loadLexicon(configSettings, value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME)
-                : Paths.get(value));
-        this.segmentConfigList = Collections.unmodifiableList(Analysis.parse(configSettings));
+        value = settings.get(LEXICON_FILE_PATH_KEY);
+        this.lexiconPaths = getLexiconPaths(value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME) : Paths.get(value));
+        this.cjkLexicon = CjkLexiconFactory.valueOf(settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK
+                : RootNodeType.ALL, lexiconPaths);
+        this.segmentConfigList = Collections.unmodifiableList(Analysis.parse(settings));
         stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
     }
 
-    /**
-     * 加载词库文件
-     */
-    private CjkLexiconFactory loadLexicon(Settings settings, Path lexiconPath) {
-        Path[] lexiconPaths;
+    private List<Path> getLexiconPaths(Path lexiconPath) {
         if (Files.isDirectory(lexiconPath, LinkOption.NOFOLLOW_LINKS)) {
             try {
-                lexiconPaths = FileSystemUtils.files(lexiconPath, new DirectoryStream.Filter<Path>() {
+                return ImmutableList.copyOf(FileSystemUtils.files(lexiconPath, new DirectoryStream.Filter<Path>() {
                     @Override
                     public boolean accept(Path p) throws IOException {
                         return p.startsWith("words") && p.endsWith(".dic");
                     }
-                });
+                }));
             } catch (IOException e) {
                 log.error("load lexicon path: " + lexiconPath + " directory files have exception", e);
                 throw new SettingsException("load lexicon path: " + lexiconPath + " directory files have exception", e);
             }
         } else {
-            lexiconPaths = new Path[]{lexiconPath};
+            return Collections.singletonList(lexiconPath);
         }
-        RootNodeType cjkRootNodeType = settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK
-                : RootNodeType.ALL;
-        return CjkLexiconFactory.valueOf(cjkRootNodeType, lexiconPaths);
     }
 
     public CjkLexiconFactory getCjkLexicon() {
@@ -283,5 +277,12 @@ public class Config {
 
     public CharArraySet getStopWords() {
         return stopWords;
+    }
+
+    /**
+     * @return Immutable List
+     */
+    public List<Path> getLexiconPaths() {
+        return lexiconPaths;
     }
 }
