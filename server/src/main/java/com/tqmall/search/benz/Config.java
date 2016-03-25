@@ -1,7 +1,12 @@
 package com.tqmall.search.benz;
 
 import com.google.common.collect.ImmutableList;
-import com.tqmall.search.commons.analyzer.*;
+import com.tqmall.search.commons.analyzer.CjkAnalyzer;
+import com.tqmall.search.commons.analyzer.CjkLexicon;
+import com.tqmall.search.commons.analyzer.MaxAsciiAnalyzer;
+import com.tqmall.search.commons.analyzer.StopWords;
+import com.tqmall.search.commons.lang.AsyncInit;
+import com.tqmall.search.commons.lang.Supplier;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import com.tqmall.search.commons.trie.RootNodeType;
 import com.tqmall.search.commons.utils.SearchStringUtils;
@@ -10,10 +15,12 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.util.CharArraySet;
+import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsException;
 import org.elasticsearch.env.Environment;
+import org.elasticsearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -210,7 +217,7 @@ public class Config {
         public abstract TokenFilter wrapper(TokenStream input);
     }
 
-    private final CjkLexiconFactory cjkLexicon;
+    private final Supplier<CjkLexicon> cjkLexicon;
 
     private final List<Analysis> segmentConfigList;
 
@@ -218,8 +225,8 @@ public class Config {
 
     private final List<Path> lexiconPaths;
 
-    public Config(Settings settings) {
-        Environment env = new Environment(settings);
+    @Inject
+    public Config(Environment env, Settings settings, ThreadPool threadPool) {
         String value = settings.get(CONFIG_FILE_PATH_KEY);
         final Path benzConfigDirPath = env.configFile().resolve(PLUGIN_NAME);
         if (!"es".equalsIgnoreCase(value) && !"elasticsearch".equalsIgnoreCase(value)) {
@@ -231,8 +238,14 @@ public class Config {
         }
         value = settings.get(LEXICON_FILE_PATH_KEY);
         this.lexiconPaths = getLexiconPaths(value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME) : Paths.get(value));
-        this.cjkLexicon = CjkLexiconFactory.valueOf(settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK
-                : RootNodeType.ALL, lexiconPaths);
+        final RootNodeType rootNodeType = settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK : RootNodeType.ALL;
+        this.cjkLexicon = new AsyncInit<>(threadPool.generic(), new Supplier<CjkLexicon>() {
+
+            @Override
+            public CjkLexicon get() {
+                return new CjkLexicon(rootNodeType, lexiconPaths);
+            }
+        });
         this.segmentConfigList = Collections.unmodifiableList(Analysis.parse(settings));
         stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
     }
@@ -255,7 +268,7 @@ public class Config {
         }
     }
 
-    public CjkLexiconFactory getCjkLexicon() {
+    public Supplier<CjkLexicon> getCjkLexicon() {
         return cjkLexicon;
     }
 

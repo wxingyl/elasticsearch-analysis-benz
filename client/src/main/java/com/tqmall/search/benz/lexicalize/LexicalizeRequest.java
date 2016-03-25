@@ -1,27 +1,26 @@
 package com.tqmall.search.benz.lexicalize;
 
-import org.elasticsearch.action.support.broadcast.BroadcastRequest;
+import org.elasticsearch.action.ActionRequestValidationException;
+import org.elasticsearch.action.support.nodes.BaseNodesRequest;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Map;
 
 /**
  * Created by xing on 16/3/24.
- * 添加中文词, 或者停止词
+ * 添加中文词, 或者添加停止词
+ * Note: 词库都不支持删除, 包括停止词
  *
  * @author xing
  */
-public class LexicalizeRequest extends BroadcastRequest<LexicalizeRequest> {
+public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
 
     private Map<String, String> addWords;
 
-    private String[] removeWords;
-
     private String[] addStopWords;
-
-    private String[] removeStopWords;
 
     /**
      * 中文分词是通过ac算法实现的, 添加完之后需要执行buildFailed操作才能生效
@@ -29,20 +28,15 @@ public class LexicalizeRequest extends BroadcastRequest<LexicalizeRequest> {
      */
     private boolean buildAcFailed = false;
 
+    public LexicalizeRequest() {
+    }
+
     public void addWords(Map<String, String> addWords) {
         this.addWords = addWords;
     }
 
-    public void removeWords(String... words) {
-        this.removeWords = words;
-    }
-
     public void addStopWords(String... words) {
         this.addStopWords = words;
-    }
-
-    public void removeStopWords(String... words) {
-        this.removeStopWords = words;
     }
 
     public void buildAcFailed(boolean buildAcFailed) {
@@ -53,20 +47,21 @@ public class LexicalizeRequest extends BroadcastRequest<LexicalizeRequest> {
         return addWords;
     }
 
-    public String[] removeWords() {
-        return removeWords;
-    }
-
     public String[] addStopWords() {
         return addStopWords;
     }
 
-    public String[] removeStopWords() {
-        return removeStopWords;
-    }
-
     public boolean buildAcFailed() {
         return buildAcFailed;
+    }
+
+    @Override
+    public ActionRequestValidationException validate() {
+        if ((addWords != null && !addWords.isEmpty()) || buildAcFailed
+                || !CollectionUtils.isEmpty(addStopWords)) return null;
+        else {
+            return new ActionRequestValidationException();
+        }
     }
 
     @SuppressWarnings({"rawstype", "unchecked"})
@@ -75,9 +70,7 @@ public class LexicalizeRequest extends BroadcastRequest<LexicalizeRequest> {
         super.readFrom(in);
         buildAcFailed = in.readBoolean();
         addWords = (Map<String, String>) in.readGenericValue();
-        removeWords = in.readStringArray();
         addStopWords = in.readStringArray();
-        removeStopWords = in.readStringArray();
     }
 
     @Override
@@ -85,8 +78,6 @@ public class LexicalizeRequest extends BroadcastRequest<LexicalizeRequest> {
         super.writeTo(out);
         out.writeBoolean(buildAcFailed);
         out.writeGenericValue(addWords);
-        out.writeStringArrayNullable(removeWords);
         out.writeStringArrayNullable(addStopWords);
-        out.writeStringArrayNullable(removeStopWords);
     }
 }

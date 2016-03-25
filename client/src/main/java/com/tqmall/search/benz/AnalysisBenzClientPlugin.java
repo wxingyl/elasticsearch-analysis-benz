@@ -1,5 +1,7 @@
 package com.tqmall.search.benz;
 
+import com.tqmall.search.benz.lexicalize.LexicalizeAction;
+import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.plugins.Plugin;
 
 /**
@@ -18,5 +20,12 @@ public class AnalysisBenzClientPlugin extends Plugin {
     @Override
     public String description() {
         return "Benz Analysis Client for ElasticSearch";
+    }
+
+    /**
+     * Module初始化时会加载进来,通过反射调用的
+     */
+    public void onModule(ActionModule module) {
+        module.registerAction(LexicalizeAction.INSTANCE, null);
     }
 }
