@@ -1,5 +1,6 @@
-package com.tqmall.search.benz;
+package com.tqmall.search.benz.action;
 
+import com.tqmall.search.benz.Config;
 import com.tqmall.search.commons.nlp.NlpUtils;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import org.elasticsearch.common.settings.Settings;

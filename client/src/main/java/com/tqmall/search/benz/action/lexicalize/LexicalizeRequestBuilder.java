@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.lexicalize;
+package com.tqmall.search.benz.action.lexicalize;
 
 import org.elasticsearch.action.Action;
 import org.elasticsearch.action.support.nodes.NodesOperationRequestBuilder;
@@ -29,6 +29,16 @@ public class LexicalizeRequestBuilder extends NodesOperationRequestBuilder<Lexic
 
     public LexicalizeRequestBuilder buildAcFailed(boolean buildAcFailed) {
         request.buildAcFailed(buildAcFailed);
+        return this;
+    }
+
+    public LexicalizeRequestBuilder pyLexicon(Map<String, String> pyLexicon) {
+        request.pyLexicon(pyLexicon);
+        return this;
+    }
+
+    public LexicalizeRequestBuilder removePyLexicon(String... removePyLexicon) {
+        request.removePyLexicon(removePyLexicon);
         return this;
     }
 }

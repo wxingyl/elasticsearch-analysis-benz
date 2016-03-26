@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.lexicalize;
+package com.tqmall.search.benz.action.lexicalize;
 
 import org.elasticsearch.action.Action;
 import org.elasticsearch.client.ElasticsearchClient;
@@ -15,7 +15,7 @@ public class LexicalizeAction extends Action<LexicalizeRequest, LexicalizeRespon
 
     public static final LexicalizeAction INSTANCE = new LexicalizeAction();
 
-    public static final String NAME = "indices:admin/benz_lexicalize";
+    public static final String NAME = "cluster:admin/benz/lexicalize";
 
     private LexicalizeAction() {
         super(NAME);

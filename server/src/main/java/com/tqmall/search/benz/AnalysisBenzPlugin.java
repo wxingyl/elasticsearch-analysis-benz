@@ -1,8 +1,10 @@
 package com.tqmall.search.benz;
 
+import com.tqmall.search.benz.action.TransportLexicalizeAction;
+import com.tqmall.search.benz.action.TransportPinyinAction;
+import com.tqmall.search.benz.action.lexicalize.LexicalizeAction;
+import com.tqmall.search.benz.action.py.PinyinAction;
 import com.tqmall.search.benz.analysis.BenzIndicesAnalysis;
-import com.tqmall.search.benz.lexicalize.LexicalizeAction;
-import com.tqmall.search.benz.lexicalize.TransportLexicalizeAction;
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.common.inject.AbstractModule;
 import org.elasticsearch.common.inject.Module;
@@ -39,6 +41,7 @@ public class AnalysisBenzPlugin extends Plugin {
      */
     public void onModule(ActionModule module) {
         module.registerAction(LexicalizeAction.INSTANCE, TransportLexicalizeAction.class);
+        module.registerAction(PinyinAction.INSTANCE, TransportPinyinAction.class);
     }
 
     public static class BenzModule extends AbstractModule {

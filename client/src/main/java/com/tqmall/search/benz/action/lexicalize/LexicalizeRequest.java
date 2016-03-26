@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.lexicalize;
+package com.tqmall.search.benz.action.lexicalize;
 
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.support.nodes.BaseNodesRequest;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * Created by xing on 16/3/24.
- * 添加中文词, 或者添加停止词
+ * 添加中文词, 停止词,
  * Note: 词库都不支持删除, 包括停止词
  *
  * @author xing
@@ -19,6 +19,16 @@ import java.util.Map;
 public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
 
     private Map<String, String> addWords;
+
+    /**
+     * 添加拼音词库
+     * 词组的拼音通过空格分离, 比如"长沙" --> "chang sha"
+     */
+    private Map<String, String> pyLexicon;
+    /**
+     * 删除指定拼音的词库
+     */
+    private String[] removePyLexicon;
 
     private String[] addStopWords;
 
@@ -43,6 +53,14 @@ public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
         this.buildAcFailed = buildAcFailed;
     }
 
+    public void pyLexicon(Map<String, String> pyLexicon) {
+        this.pyLexicon = pyLexicon;
+    }
+
+    public void removePyLexicon(String... removePyLexicon) {
+        this.removePyLexicon = removePyLexicon;
+    }
+
     public Map<String, String> addWords() {
         return addWords;
     }
@@ -55,10 +73,20 @@ public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
         return buildAcFailed;
     }
 
+    public Map<String, String> pyLexicon() {
+        return pyLexicon;
+    }
+
+    public String[] removePyLexicon() {
+        return removePyLexicon;
+    }
+
     @Override
     public ActionRequestValidationException validate() {
         if ((addWords != null && !addWords.isEmpty()) || buildAcFailed
-                || !CollectionUtils.isEmpty(addStopWords)) return null;
+                || !CollectionUtils.isEmpty(addStopWords)
+                || (pyLexicon != null && !pyLexicon.isEmpty())
+                || !CollectionUtils.isEmpty(removePyLexicon)) return null;
         else {
             return new ActionRequestValidationException();
         }
@@ -71,6 +99,8 @@ public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
         buildAcFailed = in.readBoolean();
         addWords = (Map<String, String>) in.readGenericValue();
         addStopWords = in.readStringArray();
+        pyLexicon = (Map<String, String>) in.readGenericValue();
+        removePyLexicon = in.readStringArray();
     }
 
     @Override
@@ -79,5 +109,7 @@ public class LexicalizeRequest extends BaseNodesRequest<LexicalizeRequest> {
         out.writeBoolean(buildAcFailed);
         out.writeGenericValue(addWords);
         out.writeStringArrayNullable(addStopWords);
+        out.writeGenericValue(pyLexicon);
+        out.writeStringArrayNullable(removePyLexicon);
     }
 }

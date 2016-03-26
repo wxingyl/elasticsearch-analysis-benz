@@ -1,8 +1,12 @@
-package com.tqmall.search.benz.lexicalize;
+package com.tqmall.search.benz.action;
 
 import com.tqmall.search.benz.Config;
+import com.tqmall.search.benz.action.lexicalize.LexicalizeAction;
+import com.tqmall.search.benz.action.lexicalize.LexicalizeRequest;
+import com.tqmall.search.benz.action.lexicalize.LexicalizeResponse;
 import com.tqmall.search.commons.analyzer.CjkLexicon;
 import com.tqmall.search.commons.analyzer.TokenType;
+import com.tqmall.search.commons.nlp.PinyinConvert;
 import com.tqmall.search.commons.utils.CommonsUtils;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.nodes.BaseNodeRequest;
@@ -14,6 +18,7 @@ import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.util.CollectionUtils;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.TransportService;
 
@@ -76,9 +81,8 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
             }
         }
         int addedStopWordNum = 0;
-        String[] words = lexicalizeRequest.addStopWords();
-        if (words != null && words.length > 0) {
-            for (String s : words) {
+        if (!CollectionUtils.isEmpty(lexicalizeRequest.addStopWords())) {
+            for (String s : lexicalizeRequest.addStopWords()) {
                 if (config.getStopWords().add(s)) addedStopWordNum++;
             }
         }
@@ -87,12 +91,27 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
             CjkLexicon cjkLexicon = config.getCjkLexicon().get();
             buildFailedSucceed = cjkLexicon.buildAcTrieFailed();
         }
-        return new LexicalizeResponse.Node(clusterService.localNode(), addedNum, addedStopWordNum, buildFailedSucceed);
+        int pyAddedNum = 0;
+        if (!CommonsUtils.isEmpty(lexicalizeRequest.pyLexicon())) {
+            PinyinConvert pyConvert = PinyinConvert.instance();
+            for (Map.Entry<String, String> e : lexicalizeRequest.pyLexicon().entrySet()) {
+                if (pyConvert.addPinyinLexicon(e.getKey(), e.getValue())) pyAddedNum++;
+            }
+        }
+        int pyRemovedNum = 0;
+        if (!CollectionUtils.isEmpty(lexicalizeRequest.removePyLexicon())) {
+            PinyinConvert pyConvert = PinyinConvert.instance();
+            for (String word : lexicalizeRequest.removePyLexicon()) {
+                if (pyConvert.removePinyinLexicon(word)) pyRemovedNum++;
+            }
+        }
+        return new LexicalizeResponse.Node(clusterService.localNode(), addedNum, addedStopWordNum,
+                buildFailedSucceed, pyAddedNum, pyRemovedNum);
     }
 
     @Override
     protected boolean accumulateExceptions() {
-        return true;
+        return false;
     }
 
     public static class NodeInfoRequest extends BaseNodeRequest {

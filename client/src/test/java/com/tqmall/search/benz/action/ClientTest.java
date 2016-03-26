@@ -1,4 +1,4 @@
-package com.tqmall.search.benz;
+package com.tqmall.search.benz.action;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;

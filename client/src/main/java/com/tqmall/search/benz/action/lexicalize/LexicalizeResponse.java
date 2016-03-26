@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.lexicalize;
+package com.tqmall.search.benz.action.lexicalize;
 
 import org.elasticsearch.action.support.nodes.BaseNodeResponse;
 import org.elasticsearch.action.support.nodes.BaseNodesResponse;
@@ -31,14 +31,21 @@ public class LexicalizeResponse extends BaseNodesResponse<LexicalizeResponse.Nod
 
         private boolean buildFailedSucceed;
 
-        public Node(){
+        private int pyAddedNum;
+
+        private int pyRemovedNum;
+
+        public Node() {
         }
 
-        public Node(DiscoveryNode node, int addedNum, int addedStopWordNum, boolean buildFailedSucceed) {
+        public Node(DiscoveryNode node, int addedNum, int addedStopWordNum, boolean buildFailedSucceed,
+                    int pyAddedNum, int pyRemovedNum) {
             super(node);
             this.addedNum = addedNum;
             this.addedStopWordNum = addedStopWordNum;
             this.buildFailedSucceed = buildFailedSucceed;
+            this.pyAddedNum = pyAddedNum;
+            this.pyRemovedNum = pyRemovedNum;
         }
 
         public int addedNum() {
@@ -53,12 +60,22 @@ public class LexicalizeResponse extends BaseNodesResponse<LexicalizeResponse.Nod
             return buildFailedSucceed;
         }
 
+        public int pyAddedNum() {
+            return pyAddedNum;
+        }
+
+        public int pyRemovedNum() {
+            return pyRemovedNum;
+        }
+
         @Override
         public void readFrom(StreamInput in) throws IOException {
             super.readFrom(in);
             addedNum = in.readInt();
             addedStopWordNum = in.readInt();
             buildFailedSucceed = in.readBoolean();
+            pyAddedNum = in.readInt();
+            pyRemovedNum = in.read();
         }
 
         @Override
@@ -67,6 +84,8 @@ public class LexicalizeResponse extends BaseNodesResponse<LexicalizeResponse.Nod
             out.write(addedNum);
             out.write(addedStopWordNum);
             out.writeBoolean(buildFailedSucceed);
+            out.write(pyAddedNum);
+            out.write(pyRemovedNum);
         }
     }
 }
