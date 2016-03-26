@@ -3,6 +3,7 @@ package com.tqmall.search.benz;
 import com.tqmall.search.benz.action.lexicalize.LexicalizeAction;
 import com.tqmall.search.benz.action.py.PinyinAction;
 import org.elasticsearch.action.ActionModule;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.plugins.Plugin;
 
 /**
@@ -29,5 +30,10 @@ public class AnalysisBenzClientPlugin extends Plugin {
     public void onModule(ActionModule module) {
         module.registerAction(LexicalizeAction.INSTANCE, null);
         module.registerAction(PinyinAction.INSTANCE, null);
+    }
+
+    public static TransportClient.Builder addToClient(TransportClient.Builder clientBuilder) {
+        clientBuilder.addPlugin(AnalysisBenzClientPlugin.class);
+        return clientBuilder;
     }
 }

@@ -1,5 +1,6 @@
 package com.tqmall.search.benz.action;
 
+import com.tqmall.search.benz.AnalysisBenzClientPlugin;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.settings.Settings;
@@ -23,8 +24,7 @@ public class ClientTest {
 
     @BeforeClass
     public static void init() {
-        client = TransportClient.builder()
-                .addPlugin(AnalysisBenzClientPlugin.class)
+        client = AnalysisBenzClientPlugin.addToClient(TransportClient.builder())
                 .settings(Settings.builder().put("client.transport.sniff", true))
                 .build();
         try {

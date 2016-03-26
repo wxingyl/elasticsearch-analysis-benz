@@ -37,7 +37,7 @@ public class AnalysisBenzPlugin extends Plugin {
     }
 
     /**
-     * Module初始化时会加载进来,通过反射调用的
+     * Module初始化时会加载进来, Es通过反射调用的
      */
     public void onModule(ActionModule module) {
         module.registerAction(LexicalizeAction.INSTANCE, TransportLexicalizeAction.class);

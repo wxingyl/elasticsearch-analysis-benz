@@ -23,7 +23,7 @@ public class LexicalizeAction extends Action<LexicalizeRequest, LexicalizeRespon
 
     @Override
     public LexicalizeRequestBuilder newRequestBuilder(ElasticsearchClient client) {
-        return new LexicalizeRequestBuilder(client, INSTANCE);
+        return new LexicalizeRequestBuilder(client);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.tqmall.search.benz.action.lexicalize;
 
-import org.elasticsearch.action.Action;
 import org.elasticsearch.action.support.nodes.NodesOperationRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
@@ -13,8 +12,8 @@ import java.util.Map;
  */
 public class LexicalizeRequestBuilder extends NodesOperationRequestBuilder<LexicalizeRequest, LexicalizeResponse, LexicalizeRequestBuilder> {
 
-    public LexicalizeRequestBuilder(ElasticsearchClient client, Action<LexicalizeRequest, LexicalizeResponse, LexicalizeRequestBuilder> action) {
-        super(client, action, new LexicalizeRequest());
+    public LexicalizeRequestBuilder(ElasticsearchClient client) {
+        super(client, LexicalizeAction.INSTANCE, new LexicalizeRequest());
     }
 
     public LexicalizeRequestBuilder addWords(Map<String, String> addWords) {
