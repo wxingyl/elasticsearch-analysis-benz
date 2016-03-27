@@ -1,8 +1,8 @@
-package com.tqmall.search.benz.action.py;
+package com.tqmall.search.benz.action;
 
-import com.tqmall.search.benz.action.AppendFlag;
 import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionRequestValidationException;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 
@@ -19,14 +19,22 @@ import java.util.List;
 public class PinyinRequest extends ActionRequest<PinyinRequest> {
 
     private String text;
-
+    /**
+     * 返回结果是否需要拼音首字母~~~
+     */
     private boolean needFirstLetter = false;
+    /**
+     * 繁体字是否转化为简体字之后再获取拼音~~~
+     * 默认true, 该参数还是很有用的,如果转换的字符串{@link #text}中包含繁体字,不转化可能
+     * 拿不到对应的拼音
+     */
+    private boolean traditionToSimple = true;
 
     private EnumSet<AppendFlag> appendFlags;
 
     @Override
     public ActionRequestValidationException validate() {
-        return text == null ? new ActionRequestValidationException() : null;
+        return Strings.isEmpty(text) ? new ActionRequestValidationException() : null;
     }
 
     public void text(String text) {
@@ -41,6 +49,10 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         this.appendFlags = appendFlags;
     }
 
+    public void traditionToSimple(boolean traditionToSimple) {
+        this.traditionToSimple = traditionToSimple;
+    }
+
     public String text() {
         return text;
     }
@@ -53,11 +65,16 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         return appendFlags;
     }
 
+    public boolean traditionToSimple() {
+        return traditionToSimple;
+    }
+
     @Override
     public void readFrom(StreamInput in) throws IOException {
         super.readFrom(in);
         text = in.readString();
         needFirstLetter = in.readBoolean();
+        traditionToSimple = in.readBoolean();
         int size = in.readVInt();
         if (size > 0) {
             List<AppendFlag> flags = new ArrayList<>(size);
@@ -73,6 +90,7 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         super.writeTo(out);
         out.writeString(text);
         out.writeBoolean(needFirstLetter);
+        out.writeBoolean(traditionToSimple);
         if (appendFlags == null || appendFlags.isEmpty()) {
             out.writeVInt(0);
         } else {

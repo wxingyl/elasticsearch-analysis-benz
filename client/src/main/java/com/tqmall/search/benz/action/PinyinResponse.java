@@ -1,7 +1,6 @@
-package com.tqmall.search.benz.action.py;
+package com.tqmall.search.benz.action;
 
 import org.elasticsearch.action.ActionResponse;
-import org.elasticsearch.common.Nullable;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 
@@ -26,11 +25,11 @@ public class PinyinResponse extends ActionResponse {
         this.firstLetter = firstLetter;
     }
 
-    public String getFirstLetter() {
+    public String firstLetter() {
         return firstLetter;
     }
 
-    public String getPinyin() {
+    public String pinyin() {
         return pinyin;
     }
 

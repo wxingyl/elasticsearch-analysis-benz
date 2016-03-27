@@ -1,9 +1,6 @@
 package com.tqmall.search.benz.action;
 
 import com.tqmall.search.benz.Config;
-import com.tqmall.search.benz.action.lexicalize.LexicalizeAction;
-import com.tqmall.search.benz.action.lexicalize.LexicalizeRequest;
-import com.tqmall.search.benz.action.lexicalize.LexicalizeResponse;
 import com.tqmall.search.commons.analyzer.CjkLexicon;
 import com.tqmall.search.commons.analyzer.TokenType;
 import com.tqmall.search.commons.nlp.PinyinConvert;
@@ -30,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Created by xing on 16/3/24.
- * 处理分词词库, 停止词添加Action
  *
  * @author xing
  */

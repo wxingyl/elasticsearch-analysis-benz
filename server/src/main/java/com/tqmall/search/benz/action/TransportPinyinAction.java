@@ -1,10 +1,8 @@
 package com.tqmall.search.benz.action;
 
-import com.tqmall.search.benz.action.py.PinyinAction;
-import com.tqmall.search.benz.action.py.PinyinRequest;
-import com.tqmall.search.benz.action.py.PinyinResponse;
 import com.tqmall.search.commons.nlp.NlpConst;
 import com.tqmall.search.commons.nlp.PinyinConvert;
+import com.tqmall.search.commons.nlp.TraditionToSimple;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.HandledTransportAction;
@@ -49,11 +47,12 @@ public class TransportPinyinAction extends HandledTransportAction<PinyinRequest,
                 }
             }
         }
+        String text = request.traditionToSimple() ? TraditionToSimple.instance().convert(request.text()) : request.text();
         String pinyin = null, firstLetter = null;
         if (request.needFirstLetter()) {
-            pinyin = PinyinConvert.instance().convert(request.text(), flags);
+            pinyin = PinyinConvert.instance().convert(text, flags);
         } else {
-            Map.Entry<String, String> entry = PinyinConvert.instance().firstLetterConvert(request.text(), flags);
+            Map.Entry<String, String> entry = PinyinConvert.instance().firstLetterConvert(text, flags);
             if (entry != null) {
                 pinyin = entry.getKey();
                 firstLetter = entry.getValue();

@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.action.lexicalize;
+package com.tqmall.search.benz.action;
 
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.support.nodes.BaseNodesRequest;

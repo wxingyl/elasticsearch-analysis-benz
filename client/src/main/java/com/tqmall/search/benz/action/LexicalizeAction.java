@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.action.lexicalize;
+package com.tqmall.search.benz.action;
 
 import org.elasticsearch.action.Action;
 import org.elasticsearch.client.ElasticsearchClient;

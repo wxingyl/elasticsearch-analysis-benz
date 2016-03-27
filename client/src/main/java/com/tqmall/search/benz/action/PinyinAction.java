@@ -1,4 +1,4 @@
-package com.tqmall.search.benz.action.py;
+package com.tqmall.search.benz.action;
 
 import org.elasticsearch.action.Action;
 import org.elasticsearch.client.ElasticsearchClient;

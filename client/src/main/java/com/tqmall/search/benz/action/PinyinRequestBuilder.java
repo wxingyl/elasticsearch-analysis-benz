@@ -1,6 +1,5 @@
-package com.tqmall.search.benz.action.py;
+package com.tqmall.search.benz.action;
 
-import com.tqmall.search.benz.action.AppendFlag;
 import org.elasticsearch.action.ActionRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
@@ -24,6 +23,11 @@ public class PinyinRequestBuilder extends ActionRequestBuilder<PinyinRequest, Pi
 
     public PinyinRequestBuilder needFirstLetter(boolean needFirstLetter) {
         request.needFirstLetter(needFirstLetter);
+        return this;
+    }
+
+    public PinyinRequestBuilder traditionToSimple(boolean traditionToSimple) {
+        request.traditionToSimple(traditionToSimple);
         return this;
     }
 
