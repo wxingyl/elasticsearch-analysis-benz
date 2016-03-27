@@ -12,6 +12,8 @@
     <groupId>org.elasticsearch.plugin</groupId>
     <artifactId>analysis-benz</artifactId>
     <packaging>jar</packaging>
+    <name>Plugin: Analysis: Benz</name>
+    <description>Benz Analysis for ElasticSearch</description>
 
     <properties>
         <commons-nlp.version>1.0-SNAPSHOT</commons-nlp.version>
@@ -38,7 +40,6 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>${project.build.directory}/releases/</outputDirectory>
                     <descriptors>
                         <descriptor>src/main/assemblies/plugin.xml</descriptor>

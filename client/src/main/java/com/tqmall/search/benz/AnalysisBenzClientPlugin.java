@@ -5,6 +5,7 @@ import com.tqmall.search.benz.action.PinyinAction;
 import com.tqmall.search.benz.action.TraditionToSimpleAction;
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.plugins.Plugin;
 
 /**
@@ -14,6 +15,12 @@ import org.elasticsearch.plugins.Plugin;
  * @author xing
  */
 public class AnalysisBenzClientPlugin extends Plugin {
+
+    /**
+     * es 优先调用带{@link Settings}的构造方法, 虽然这个参数没用, 先放着吧
+     */
+    public AnalysisBenzClientPlugin(Settings settings) {
+    }
 
     @Override
     public String name() {

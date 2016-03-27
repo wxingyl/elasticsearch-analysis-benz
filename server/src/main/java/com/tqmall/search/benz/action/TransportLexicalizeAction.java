@@ -114,6 +114,9 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
 
         private LexicalizeRequest request;
 
+        public NodeInfoRequest() {
+        }
+
         NodeInfoRequest(String nodeId, LexicalizeRequest request) {
             super(request, nodeId);
             this.request = request;
@@ -128,6 +131,7 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
         @Override
         public void readFrom(StreamInput in) throws IOException {
             super.readFrom(in);
+            request = new LexicalizeRequest();
             request.readFrom(in);
         }
     }

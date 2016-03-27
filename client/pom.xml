@@ -9,6 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Plugin: Analysis: Benz-Client</name>
+    <description>Benz Analysis Client for ElasticSearch</description>
+
     <artifactId>analysis-benz-client</artifactId>
     <packaging>jar</packaging>
 

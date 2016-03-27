@@ -5,6 +5,7 @@ import com.tqmall.search.benz.analysis.BenzIndicesAnalysis;
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.common.inject.AbstractModule;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.plugins.Plugin;
 
 import java.util.Collection;
@@ -17,6 +18,12 @@ import java.util.Collections;
  * @author xing
  */
 public class AnalysisBenzPlugin extends Plugin {
+
+    /**
+     * es 优先调用带{@link Settings}的构造方法, 虽然这个参数没用, 先放着吧
+     */
+    public AnalysisBenzPlugin(Settings settings) {
+    }
 
     @Override
     public String name() {
