@@ -1,6 +1,8 @@
 # Benz Analysis for ElasticSearch
 
-ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算法识别，高度可配置, 目前还在开发中，基本的分词可用，但是添加词库等还不行~~~
+ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算法识别，高度可配置, 目前还在开发中，基本的分词可用~~~
+
+作为扩展，支持汉字文本获取拼音(去除多音字)，繁体转简体，封装了Es调用Action，Request，可以通过ElasticSearchClient调用
 
 文中`$ES_HOME`表示elastic search的安装目录，具体执行的时候自行转换
 
@@ -11,6 +13,8 @@ ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算�
 |      master      |   2.2.0    |
 | dev-1.0-SNAPSHOT |   2.2.0    |
 
+注意: 该项目依赖了[search-commons](https://github.com/wxingyl/search-commons) 中的[commons-nlp](https://github.com/wxingyl/search-commons/tree/master/commons-nlp) 模块，相关jar包没有在maven中央仓库，所以需要先行下载, 本地`mvn install`才能保证下面安装成功
+
 ##Install
 
 ###download code
@@ -19,17 +23,17 @@ git clone https://github.com/wxingyl/elasticsearch-analysis-benz.git
 
 ###complie
 
-man package
+`man clean package`
 
 ###install
 
 es的安装目录下面`cd $ES_HOME`，执行如下命令:
 
 ```shell
-./bin/plugin install file:/{BENZ_CODE_PATH}/target/releases/analysis-benz-{version}.zip
+./bin/plugin install file:/{BENZ_CODE_PATH}/server/target/releases/analysis-benz-{version}.zip
 ```
 
-`BENZ_CODE_PATH `为elasticsearch-abalysis-benz代码路径
+`BENZ_CODE_PATH `为elasticsearch-analysis-benz代码路径
 
 ##Config
 
@@ -105,4 +109,24 @@ benz.analyzer:
 ​	4. `ascii_max`指无间隔的英文字符，数字(包括小数)认为一个词，比如`DG123`,  `HD5000`等都为一个词, `24.5benz-analyzerv1.0`分词结果为: `24.5benz`, `analyzerv1.0`
 
 ​	5. 具体配置详细信息直接看代码[Config.java](server/src/main/java/com/tqmall/search/benz/Config.java)，代码是最好的文档
+
+##Benz Client
+
+client模块封装了一些通过Es调用Action，通过[AnalysisBenzClientPlugin](client/src/main/java/com/tqmall/search/benz/AnalysisBenzClientPlugin.java) 实现，具体包括：
+
+1. `LexicalizeAction` 实时添加分词词库和停止词，只支持添加，不能删除，但是实时修改词库的行为不建议使用，能不用就尽量不要使用~~~~~~
+2. `PinyinAction` 汉字文本转换为拼音
+3. `TraditionToSimpleAction` 中文文本繁体转简体
+
+具体使用Demo可参阅[ClientDemoTest](client/src/test/java/com/tqmall/search/benz/action/ClientDemoTest.java)
+
+###pom依赖
+
+```xml
+        <dependency>
+            <groupId>com.tqmall.search</groupId>
+            <artifactId>analysis-benz-client</artifactId>
+            <version>dev-1.0-SNAPSHOT</version>
+        </dependency>
+```
 

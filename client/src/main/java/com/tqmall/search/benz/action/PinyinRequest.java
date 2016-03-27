@@ -15,6 +15,7 @@ import java.util.List;
  * Created by xing on 16/3/26.
  *
  * @author xing
+ * @see AppendFlag
  */
 public class PinyinRequest extends ActionRequest<PinyinRequest> {
 
@@ -25,17 +26,21 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
      * 拿不到对应的拼音
      */
     private boolean traditionToSimple = true;
-
+    /**
+     * @see AppendFlag
+     */
     private EnumSet<AppendFlag> appendFlags;
     /**
      * 返回结果是否需要拼音首字母~~~
+     *
      * @see PinyinResponse#firstLetter
      */
     private boolean needFirstLetter = false;
 
     /**
      * 返回结果是否需要每个cjk字符对应的拼音
-     * @see PinyinResponse#singleCharPyMap
+     *
+     * @see PinyinResponse#charactersPinyin
      */
     private boolean needSingleCharPy = false;
 
@@ -89,13 +94,23 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         super.readFrom(in);
         text = in.readString();
         traditionToSimple = in.readBoolean();
-        int size = in.readVInt();
-        if (size > 0) {
-            List<AppendFlag> flags = new ArrayList<>(size);
-            for (int i = 0; i < size; i++) {
-                flags.add(AppendFlag.valueOf(in.readString()));
+        byte flags = in.readByte();
+        if (flags != 0) {
+            List<AppendFlag> list = new ArrayList<>(4);
+            AppendFlag[] values = AppendFlag.values();
+            if ((flags & 1) != 0) {
+                list.add(values[0]);
             }
-            appendFlags = EnumSet.copyOf(flags);
+            if ((flags & (1 << 1)) != 0) {
+                list.add(values[1]);
+            }
+            if ((flags & (1 << 2)) != 0) {
+                list.add(values[2]);
+            }
+            if ((flags & (1 << 3)) != 0) {
+                list.add(values[3]);
+            }
+            appendFlags = EnumSet.copyOf(list);
         }
         needFirstLetter = in.readBoolean();
         needSingleCharPy = in.readBoolean();
@@ -107,13 +122,13 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         out.writeString(text);
         out.writeBoolean(traditionToSimple);
         if (appendFlags == null || appendFlags.isEmpty()) {
-            out.writeVInt(0);
+            out.writeByte((byte) 0);
         } else {
-
-            out.writeVInt(appendFlags.size());
+            byte flags = 0;
             for (AppendFlag f : appendFlags) {
-                out.writeString(f.name());
+                flags |= 1 << f.ordinal();
             }
+            out.writeByte(flags);
         }
         out.writeBoolean(needFirstLetter);
         out.writeBoolean(needSingleCharPy);

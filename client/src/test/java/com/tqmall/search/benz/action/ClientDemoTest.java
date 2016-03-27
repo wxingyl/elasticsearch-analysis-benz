@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author xing
  */
-public class ClientTest {
+public class ClientDemoTest {
 
     private static TransportClient client;
 
