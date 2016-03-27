@@ -21,11 +21,6 @@ public class PinyinRequestBuilder extends ActionRequestBuilder<PinyinRequest, Pi
         return this;
     }
 
-    public PinyinRequestBuilder needFirstLetter(boolean needFirstLetter) {
-        request.needFirstLetter(needFirstLetter);
-        return this;
-    }
-
     public PinyinRequestBuilder traditionToSimple(boolean traditionToSimple) {
         request.traditionToSimple(traditionToSimple);
         return this;
@@ -33,6 +28,26 @@ public class PinyinRequestBuilder extends ActionRequestBuilder<PinyinRequest, Pi
 
     public PinyinRequestBuilder appendFlags(EnumSet<AppendFlag> appendFlags) {
         request.appendFlags(appendFlags);
+        return this;
+    }
+
+    public PinyinRequestBuilder needFirstLetter() {
+        request.needFirstLetter(true);
+        return this;
+    }
+
+    public PinyinRequestBuilder needFirstLetter(boolean needFirstLetter) {
+        request.needFirstLetter(needFirstLetter);
+        return this;
+    }
+
+    public PinyinRequestBuilder needSingleCharPy() {
+        request.needSingleCharPy(true);
+        return this;
+    }
+
+    public PinyinRequestBuilder needSingleCharPy(boolean needFirstLetter) {
+        request.needSingleCharPy(needFirstLetter);
         return this;
     }
 }

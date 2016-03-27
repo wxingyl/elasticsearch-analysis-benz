@@ -31,6 +31,11 @@ public class LexicalizeRequestBuilder extends NodesOperationRequestBuilder<Lexic
         return this;
     }
 
+    public LexicalizeRequestBuilder buildAcFailed() {
+        request.buildAcFailed(true);
+        return this;
+    }
+
     public LexicalizeRequestBuilder pyLexicon(Map<String, String> pyLexicon) {
         request.pyLexicon(pyLexicon);
         return this;

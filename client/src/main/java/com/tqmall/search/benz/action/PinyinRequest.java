@@ -20,10 +20,6 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
 
     private String text;
     /**
-     * 返回结果是否需要拼音首字母~~~
-     */
-    private boolean needFirstLetter = false;
-    /**
      * 繁体字是否转化为简体字之后再获取拼音~~~
      * 默认true, 该参数还是很有用的,如果转换的字符串{@link #text}中包含繁体字,不转化可能
      * 拿不到对应的拼音
@@ -31,6 +27,17 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
     private boolean traditionToSimple = true;
 
     private EnumSet<AppendFlag> appendFlags;
+    /**
+     * 返回结果是否需要拼音首字母~~~
+     * @see PinyinResponse#firstLetter
+     */
+    private boolean needFirstLetter = false;
+
+    /**
+     * 返回结果是否需要每个cjk字符对应的拼音
+     * @see PinyinResponse#singleCharPyMap
+     */
+    private boolean needSingleCharPy = false;
 
     @Override
     public ActionRequestValidationException validate() {
@@ -41,10 +48,6 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         this.text = text;
     }
 
-    public void needFirstLetter(boolean needFirstLetter) {
-        this.needFirstLetter = needFirstLetter;
-    }
-
     public void appendFlags(EnumSet<AppendFlag> appendFlags) {
         this.appendFlags = appendFlags;
     }
@@ -53,12 +56,16 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         this.traditionToSimple = traditionToSimple;
     }
 
-    public String text() {
-        return text;
+    public void needFirstLetter(boolean needFirstLetter) {
+        this.needFirstLetter = needFirstLetter;
     }
 
-    public boolean needFirstLetter() {
-        return needFirstLetter;
+    public void needSingleCharPy(boolean needSingleCharPy) {
+        this.needSingleCharPy = needSingleCharPy;
+    }
+
+    public String text() {
+        return text;
     }
 
     public EnumSet<AppendFlag> appendFlags() {
@@ -69,11 +76,18 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
         return traditionToSimple;
     }
 
+    public boolean needFirstLetter() {
+        return needFirstLetter;
+    }
+
+    public boolean needSingleCharPy() {
+        return needSingleCharPy;
+    }
+
     @Override
     public void readFrom(StreamInput in) throws IOException {
         super.readFrom(in);
         text = in.readString();
-        needFirstLetter = in.readBoolean();
         traditionToSimple = in.readBoolean();
         int size = in.readVInt();
         if (size > 0) {
@@ -83,21 +97,25 @@ public class PinyinRequest extends ActionRequest<PinyinRequest> {
             }
             appendFlags = EnumSet.copyOf(flags);
         }
+        needFirstLetter = in.readBoolean();
+        needSingleCharPy = in.readBoolean();
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         super.writeTo(out);
         out.writeString(text);
-        out.writeBoolean(needFirstLetter);
         out.writeBoolean(traditionToSimple);
         if (appendFlags == null || appendFlags.isEmpty()) {
             out.writeVInt(0);
         } else {
+
             out.writeVInt(appendFlags.size());
             for (AppendFlag f : appendFlags) {
                 out.writeString(f.name());
             }
         }
+        out.writeBoolean(needFirstLetter);
+        out.writeBoolean(needSingleCharPy);
     }
 }
