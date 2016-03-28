@@ -11,11 +11,11 @@ import org.elasticsearch.client.ElasticsearchClient;
  *
  * @author xing
  */
-public final class BenzClient {
+public final class Benz {
 
     private final ElasticsearchClient client;
 
-    public BenzClient(ElasticsearchClient client) {
+    public Benz(ElasticsearchClient client) {
         this.client = client;
     }
 

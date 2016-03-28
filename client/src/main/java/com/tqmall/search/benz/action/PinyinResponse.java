@@ -24,7 +24,7 @@ public class PinyinResponse extends ActionResponse {
      */
     private List<CjkCharacter> charactersPinyin;
 
-    public PinyinResponse() {
+    PinyinResponse() {
     }
 
     public PinyinResponse(String pinyin, String firstLetter, List<CjkCharacter> charactersPinyin) {
@@ -93,15 +93,15 @@ public class PinyinResponse extends ActionResponse {
             this.position = position;
         }
 
-        public char character() {
+        public char getCharacter() {
             return character;
         }
 
-        public String pinyin() {
+        public String getPinyin() {
             return pinyin;
         }
 
-        public int position() {
+        public int getPosition() {
             return position;
         }
 

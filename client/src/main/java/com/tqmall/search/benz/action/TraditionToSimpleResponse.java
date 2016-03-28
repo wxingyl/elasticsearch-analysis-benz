@@ -17,14 +17,14 @@ public class TraditionToSimpleResponse extends ActionResponse {
      */
     private String simpleText;
 
-    public TraditionToSimpleResponse() {
+    TraditionToSimpleResponse() {
     }
 
     public TraditionToSimpleResponse(String simpleText) {
         this.simpleText = simpleText;
     }
 
-    public String simpleText() {
+    public String getSimpleText() {
         return simpleText;
     }
 

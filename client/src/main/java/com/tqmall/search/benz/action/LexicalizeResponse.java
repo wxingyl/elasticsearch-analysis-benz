@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class LexicalizeResponse extends BaseNodesResponse<LexicalizeResponse.Node> {
 
-    public LexicalizeResponse() {
+    LexicalizeResponse() {
     }
 
     public LexicalizeResponse(ClusterName clusterName, Node[] nodes) {
@@ -48,23 +48,23 @@ public class LexicalizeResponse extends BaseNodesResponse<LexicalizeResponse.Nod
             this.pyRemovedNum = pyRemovedNum;
         }
 
-        public int addedNum() {
+        public int getAddedNum() {
             return addedNum;
         }
 
-        public int addedStopWordNum() {
+        public int getAddedStopWordNum() {
             return addedStopWordNum;
         }
 
-        public boolean buildFailedSucceed() {
+        public boolean isBuildFailedSucceed() {
             return buildFailedSucceed;
         }
 
-        public int pyAddedNum() {
+        public int getPyAddedNum() {
             return pyAddedNum;
         }
 
-        public int pyRemovedNum() {
+        public int getPyRemovedNum() {
             return pyRemovedNum;
         }
 

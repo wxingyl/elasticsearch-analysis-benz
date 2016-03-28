@@ -13,7 +13,7 @@ public class TraditionToSimpleAction extends Action<TraditionToSimpleRequest, Tr
 
     public static final TraditionToSimpleAction INSTANCE = new TraditionToSimpleAction();
 
-    public static final String NAME = "indices:data/read/benz/t4s";
+    public static final String NAME = "indices:data/read/benz/t2s";
 
     private TraditionToSimpleAction() {
         super(NAME);

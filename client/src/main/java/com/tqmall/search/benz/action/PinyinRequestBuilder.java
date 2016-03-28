@@ -1,5 +1,6 @@
 package com.tqmall.search.benz.action;
 
+import com.google.common.collect.Lists;
 import org.elasticsearch.action.ActionRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
@@ -23,6 +24,11 @@ public class PinyinRequestBuilder extends ActionRequestBuilder<PinyinRequest, Pi
 
     public PinyinRequestBuilder traditionToSimple(boolean traditionToSimple) {
         request.traditionToSimple(traditionToSimple);
+        return this;
+    }
+
+    public PinyinRequestBuilder appendFlags(AppendFlag... appendFlags) {
+        request.appendFlags(EnumSet.copyOf(Lists.newArrayList(appendFlags)));
         return this;
     }
 
