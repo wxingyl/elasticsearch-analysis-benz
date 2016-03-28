@@ -118,7 +118,7 @@ client模块封装了一些通过Es调用Action，通过[AnalysisBenzClientPlugi
 2. `PinyinAction` 汉字文本转换为拼音
 3. `TraditionToSimpleAction` 中文文本繁体转简体
 
-具体使用Demo可参阅[ClientDemoTest](client/src/test/java/com/tqmall/search/benz/action/ClientDemoTest.java)
+具体使用Demo可参阅[ClientDemoTest](client/src/test/java/com/tqmall/search/benz/ClientDemoTest.java)
 
 ###pom依赖
 
