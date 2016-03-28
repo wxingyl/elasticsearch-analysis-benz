@@ -13,13 +13,13 @@ ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算�
 |      master      |   2.2.0    |
 | dev-1.0-SNAPSHOT |   2.2.0    |
 
-注意: 该项目依赖了[search-commons](../search-commons) 中的[commons-nlp](../search-commons/tree/master/commons-nlp) 模块，相关jar包没有在maven中央仓库，所以需要先行下载, 本地`mvn install`才能保证下面安装成功
+注意: 该项目依赖了[search-commons](http://dev.tqmall.com/tq-search/search-commons) 中的[commons-nlp](http://dev.tqmall.com/tq-search/search-commons/tree/master/commons-nlp) 模块，相关jar包没有在maven中央仓库，所以需要先行下载, 本地`mvn install`才能保证下面安装成功
 
 ##Install
 
 ###download code
 
-git clone https://github.com/wxingyl/elasticsearch-analysis-benz.git
+git clone http://dev.tqmall.com/tq-search/elasticsearch-analysis-benz.git
 
 ###complie
 
