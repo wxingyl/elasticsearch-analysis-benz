@@ -116,5 +116,30 @@ public class PinyinResponse extends ActionResponse {
             out.writeString(pinyin);
             out.writeVInt(position);
         }
+
+        @Override
+        public String toString() {
+            return "" + character + ',' + position + ',' + pinyin;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof CjkCharacter)) return false;
+
+            CjkCharacter that = (CjkCharacter) o;
+
+            if (character != that.character) return false;
+            if (position != that.position) return false;
+            return pinyin.equals(that.pinyin);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (int) character;
+            result = 31 * result + position;
+            result = 31 * result + pinyin.hashCode();
+            return result;
+        }
     }
 }
