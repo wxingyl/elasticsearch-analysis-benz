@@ -35,10 +35,10 @@ public class BenzIndicesAnalysis extends AbstractComponent {
             log.info("add " + name + " analyzerProviderFactory and tokenizerFactory");
         }
         //添加cjk stopWord filter
-        indicesAnalysisService.tokenFilterFactories().put(Config.STOP_FILTER_NAME, new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
+        indicesAnalysisService.tokenFilterFactories().put("benz_stop", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
             @Override
             public String name() {
-                return Config.STOP_FILTER_NAME;
+                return "benz_stop";
             }
 
             @Override
@@ -46,7 +46,7 @@ public class BenzIndicesAnalysis extends AbstractComponent {
                 return new StopFilter(tokenStream, config.getStopWords());
             }
         }));
-        log.info("add " + Config.STOP_FILTER_NAME + " tokenFilterFactory");
+        log.info("add benz_stop tokenFilterFactory");
         //添加BenzCjkCharFilter
         indicesAnalysisService.charFilterFactories().put(BenzCjkCharFilter.NAME,
                 new PreBuiltCharFilterFactoryFactory(new BenzCjkCharFilter.Factory()));

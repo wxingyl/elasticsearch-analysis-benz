@@ -46,11 +46,6 @@ public class Config {
     public static final String PLUGIN_NAME = "analysis-benz";
 
     /**
-     * 分词器停止词TokenFilter name
-     */
-    public static final String STOP_FILTER_NAME = "benz_stop";
-
-    /**
      * 配置文件[确认能够正确打开, 可读, yml格式文件], 在es主配置文件[elasticsearch.yml]中指定
      * 不配置则默认读取es config {@link #DEFAULT_CONFIG_FILE_NAME}
      * 配置值为es/elasticsearch/es.yml/elasticsearch.yml 中的任意一个, 则从es主配置文件[elasticsearch.yml]中读取
