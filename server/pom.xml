@@ -5,7 +5,8 @@
     <parent>
         <artifactId>es-benz</artifactId>
         <groupId>com.tqmall.search</groupId>
-        <version>dev-1.0-SNAPSHOT</version>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +17,7 @@
     <description>Benz Analysis for ElasticSearch</description>
 
     <properties>
-        <commons-nlp.version>1.0-SNAPSHOT</commons-nlp.version>
+        <commons-nlp.version>1.0</commons-nlp.version>
         <es.plugin.name>analysis-benz</es.plugin.name>
         <es.plugin.jvm>true</es.plugin.jvm>
         <es.plugin.classname>com.tqmall.search.benz.AnalysisBenzPlugin</es.plugin.classname>
