@@ -17,7 +17,6 @@
     <description>Benz Analysis for ElasticSearch</description>
 
     <properties>
-        <commons-nlp.version>1.0</commons-nlp.version>
         <es.plugin.name>analysis-benz</es.plugin.name>
         <es.plugin.jvm>true</es.plugin.jvm>
         <es.plugin.classname>com.tqmall.search.benz.AnalysisBenzPlugin</es.plugin.classname>
@@ -32,7 +31,7 @@
         <dependency>
             <groupId>com.tqmall.search</groupId>
             <artifactId>commons-nlp</artifactId>
-            <version>${commons-nlp.version}</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
