@@ -12,8 +12,14 @@ ElasticSearch中文分词插件，支持词典树正向，反向匹配，Ac算�
 | :----------: | :--------: |
 |    1.1.0     |   2.2.0    |
 |    1.1.1     |   2.3.0    |
+|    1.1.2     |   2.4.0    |
 
-注意: 该项目依赖了[search-commons](http://dev.tqmall.com/tq-search/search-commons) 中的[commons-nlp](http://dev.tqmall.com/tq-search/search-commons/tree/master/commons-nlp) 模块，相关jar包没有在maven中央仓库，所以需要先行下载, 本地`mvn install`才能保证下面安装成功
+注意:
+
+1. 该项目依赖了[search-commons](http://dev.tqmall.com/tq-search/search-commons) 中的[commons-nlp](http://dev.tqmall.com/tq-search/search-commons/tree/master/commons-nlp) 模块，相关jar包没有在maven中央仓库，所以需要先行下载, 本地`mvn install`才能保证下面安装成功
+2. 其他es 版本可以自己修改代码，打包编译，比如es 版本 2.2.1版本，自己可以打1.1.0.1版本
+
+
 
 ##Install
 
