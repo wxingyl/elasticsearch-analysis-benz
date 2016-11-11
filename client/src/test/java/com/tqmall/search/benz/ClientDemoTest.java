@@ -3,15 +3,15 @@ package com.tqmall.search.benz;
 import com.tqmall.search.benz.action.AppendFlag;
 import com.tqmall.search.benz.action.PinyinResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +23,12 @@ import java.util.Map;
  */
 public class ClientDemoTest {
 
-    private static TransportClient esClient;
-
-    private static Benz benz;
+    private static TestClient esClient;
 
     @BeforeClass
     public static void init() {
-        esClient = AnalysisBenzClientPlugin.addToClient(TransportClient.builder())
-                .settings(Settings.builder().put("client.transport.sniff", true))
-                .build();
-        try {
-            esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        benz = new Benz(esClient);
+        Settings settings = Settings.builder().put("client.transport.sniff", true).build();
+        esClient = new TestClient(settings, Collections.singletonList(AnalysisBenzClientPlugin.class));
     }
 
     @AfterClass
@@ -66,7 +57,7 @@ public class ClientDemoTest {
         addWords.put("淘汽", "c");
         addWords.put("云修", "c");
         addWords.put("淘汽云修", "c");
-        benz.lexicalize().addWords(addWords).buildAcFailed().get();
+        esClient.lexicalize().addWords(addWords).buildAcFailed().get();
 
         response = esClient.admin().indices().prepareAnalyze(text).setAnalyzer("benz_index").get();
         exceptedTokens.clear();
@@ -130,25 +121,25 @@ public class ClientDemoTest {
     @Ignore
     public void pinyinTest() {
         String text = "长沙 我叫小浪子, 是66我的新浪微博";
-        PinyinResponse response = benz.pinyin().text(text).get();
+        PinyinResponse response = esClient.pinyin().text(text).get();
         String exceptedPinyin = "changshawojiaoxiaolangzishiwodexinlangweibo";
         Assert.assertEquals(exceptedPinyin, response.pinyin());
         Assert.assertNull(response.firstLetter());
 
-        response = benz.pinyin().text(text).needFirstLetter().appendFlags(AppendFlag.WHITESPACE).get();
+        response = esClient.pinyin().text(text).needFirstLetter().appendFlags(AppendFlag.WHITESPACE).get();
         exceptedPinyin = "changsha wojiaoxiaolangzi shiwodexinlangweibo";
         String exceptedFirstLetter = "cswjxlzswdxlwb";
         Assert.assertEquals(exceptedPinyin, response.pinyin());
         Assert.assertEquals(exceptedFirstLetter, response.firstLetter());
 
-        response = benz.pinyin().text(text).needFirstLetter().appendFlags(AppendFlag.WHITESPACE, AppendFlag.DIGIT,
+        response = esClient.pinyin().text(text).needFirstLetter().appendFlags(AppendFlag.WHITESPACE, AppendFlag.DIGIT,
                 AppendFlag.OTHER).get();
         exceptedPinyin = "changsha wojiaoxiaolangzi, shi66wodexinlangweibo";
         exceptedFirstLetter = "cswjxlzswdxlwb";
         Assert.assertEquals(exceptedPinyin, response.pinyin());
         Assert.assertEquals(exceptedFirstLetter, response.firstLetter());
 
-        response = benz.pinyin().text(text).needFirstLetter().needSingleCharPy().get();
+        response = esClient.pinyin().text(text).needFirstLetter().needSingleCharPy().get();
         exceptedPinyin = "changshawojiaoxiaolangzishiwodexinlangweibo";
         exceptedFirstLetter = "cswjxlzswdxlwb";
         Assert.assertEquals(exceptedPinyin, response.pinyin());
@@ -175,12 +166,12 @@ public class ClientDemoTest {
     public void traditionToSimpleTest() {
         String text = "發現淘汽雲修汽車";
         String exceptedSimpleText = "发现淘汽云修汽车";
-        String simpleText = benz.traditionToSimple().word(text).get().getSimpleText();
+        String simpleText = esClient.traditionToSimple().word(text).get().getSimpleText();
         Assert.assertEquals(exceptedSimpleText, simpleText);
 
         text = "發現淘汽雲修, 汽車";
         exceptedSimpleText = "发现淘汽云修, 汽车";
-        simpleText = benz.traditionToSimple().word(text).get().getSimpleText();
+        simpleText = esClient.traditionToSimple().word(text).get().getSimpleText();
         Assert.assertEquals(exceptedSimpleText, simpleText);
     }
 

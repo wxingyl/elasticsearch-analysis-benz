@@ -1,6 +1,5 @@
 package com.tqmall.search.benz;
 
-import com.google.common.collect.ImmutableList;
 import com.tqmall.search.commons.analyzer.CjkAnalyzer;
 import com.tqmall.search.commons.analyzer.CjkLexicon;
 import com.tqmall.search.commons.analyzer.MaxAsciiAnalyzer;
@@ -10,25 +9,32 @@ import com.tqmall.search.commons.lang.Supplier;
 import com.tqmall.search.commons.nlp.SegmentConfig;
 import com.tqmall.search.commons.trie.RootNodeType;
 import com.tqmall.search.commons.utils.SearchStringUtils;
+import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.KStemFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.elasticsearch.common.inject.Inject;
+
 import org.elasticsearch.common.io.FileSystemUtils;
+import org.elasticsearch.common.io.PathUtils;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.SettingsException;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static org.elasticsearch.common.Strings.cleanPath;
 
 /**
  * Created by xing on 16/3/21.
@@ -43,36 +49,37 @@ public class Config {
     /**
      * 当前插件的名称
      */
-    public static final String PLUGIN_NAME = "analysis-benz";
+    private static final String PLUGIN_NAME = "analysis-benz";
 
     /**
-     * 配置文件[确认能够正确打开, 可读, yml格式文件], 在es主配置文件[elasticsearch.yml]中指定
-     * 不配置则默认读取es config {@link #DEFAULT_CONFIG_FILE_NAME}
-     * 配置值为es/elasticsearch/es.yml/elasticsearch.yml 中的任意一个, 则从es主配置文件[elasticsearch.yml]中读取
+     * 配置文件路径[确认能够正确打开, 可读, yml格式文件], 在es主配置文件[elasticsearch.yml]中设置该文件的路径
+     * 未配置该值, 则读取默认文件{@link #DEFAULT_CONFIG_FILE_NAME}
+     * <p>
+     * 该属性的值如果为[es, elasticsearch] 中的任意一个, 则认为不需要单独的配置文件, 直接从es主配置文件[elasticsearch.yml]中读取
      * 推荐单独文件
      */
-    static final String CONFIG_FILE_PATH_KEY = "benz.conf";
+    private static final String CONFIG_FILE_PATH_KEY = "benz.path.conf";
 
     /**
      * 词库文件路径配置key, 可以为文件夹
      * 如果配置项值为一个文件夹, 则加载该文件夹下面, 以"words"为前缀, 并且".dic"为后缀的所有词库文件
      */
-    static final String LEXICON_FILE_PATH_KEY = "benz.lexicon";
+    private static final String LEXICON_FILE_PATH_KEY = "benz.path.lexicon";
 
     /**
      * 词库文件是否只包含中文cjk字符, 默认true
      */
-    static final String LEXICON_ONLY_CJK_KEY = "benz.lexicon.only_cjk";
+    private static final String LEXICON_ONLY_CJK_KEY = "benz.lexicon.only_cjk";
 
     /**
      * 默认的配置文件名, 没有配置{@link #CONFIG_FILE_PATH_KEY}, 则读取这个配置文件
      */
-    static final String DEFAULT_CONFIG_FILE_NAME = "config.yml";
+    private static final String DEFAULT_CONFIG_FILE_NAME = "config.yml";
 
     /**
      * 默认的词库文件名, 没有配置{@link #LEXICON_FILE_PATH_KEY} 则读取Es提供的默认配置路径
      */
-    static final String DEFAULT_LEXICON_FILE_NAME = "words_default.dic";
+    private static final String DEFAULT_LEXICON_FILE_NAME = "words_default.dic";
 
     /**
      * 分词器配置文件解析
@@ -80,7 +87,7 @@ public class Config {
      *
      * @see SegmentConfig
      */
-    public static class Analysis extends SegmentConfig {
+    public static class AnalysisConfig extends SegmentConfig {
         /**
          * 分词器配置 key
          * 必须配置
@@ -88,7 +95,7 @@ public class Config {
         static final String KEY = "benz.analyzer";
         /**
          * benz配置分词器名称前缀 key
-         * 无默认值, 可以为空
+         * 默认 benz_
          */
         static final String PREFIX_KEY = "benz.analyzer.name.prefix";
 
@@ -135,8 +142,10 @@ public class Config {
          */
         static final String EN_STEM = "en_stem";
 
-        static Analysis parse(String namePrefix, String keyPrefix, Settings settings) {
-            Analysis config = new Analysis(namePrefix + settings.get(keyPrefix + NAME));
+        static final String STOP_WORD = "stop_word";
+
+        static AnalysisConfig parse(String namePrefix, String keyPrefix, Settings settings) {
+            AnalysisConfig config = new AnalysisConfig((namePrefix + getConfigValue(settings, keyPrefix + NAME)).toLowerCase());
             if (settings.getAsBoolean(keyPrefix + ASCII_MAX, false)) {
                 config.setMaxAsciiAnalyzer(true);
             } else {
@@ -148,16 +157,16 @@ public class Config {
                     config.setAsciiAnalyzerAppendEnMix(settings.getAsBoolean(keyPrefix + APPEND_EN_MIX, false));
                 }
             }
-            String value = settings.get(keyPrefix + CJK_ANALYZER);
-            if (!SearchStringUtils.isEmpty(value)) {
+            String value = getConfigValue(settings, keyPrefix + CJK_ANALYZER);
+            if (value != null) {
                 config.setCjkAnalyzerType(CjkAnalyzer.Type.valueOf(value.toUpperCase()));
             }
             if (settings.getAsBoolean(keyPrefix + MERGE_NUM_QUANTIFIER, false)) {
                 config.setMergeNumQuantifier(true);
                 config.setAppendNumQuantifier(settings.getAsBoolean(keyPrefix + APPEND_NUM_QUANTIFIER, false));
             }
-            value = settings.get(keyPrefix + EN_STEM);
-            if (!SearchStringUtils.isEmpty(value)) {
+            value = getConfigValue(settings, keyPrefix + EN_STEM);
+            if (value != null) {
                 try {
                     config.enStem = EnStemType.valueOf(value.toUpperCase());
                 } catch (IllegalArgumentException e) {
@@ -165,16 +174,21 @@ public class Config {
                             + " filed value: " + value + " must is \"k\" or \"porter\"");
                 }
             }
+            if (settings.getAsBoolean(keyPrefix + STOP_WORD, true)) {
+                config.needStopWord = true;
+            }
             return config;
         }
 
-        static List<Analysis> parse(Settings settings) {
-            final String namePrefix = settings.get(PREFIX_KEY, "");
-            List<Analysis> segmentConfigList = new ArrayList<>();
+        static List<AnalysisConfig> parse(Settings settings) {
+            String namePrefix = getConfigValue(settings, PREFIX_KEY);
+            if (namePrefix == null) namePrefix = "benz_";
+            else namePrefix = namePrefix.toLowerCase();
+            List<AnalysisConfig> segmentConfigList = new ArrayList<>();
             int count = 0;
             for (; ; count++) {
                 String keyPrefix = KEY + '.' + count + '.';
-                String value = settings.get(keyPrefix + NAME);
+                String value = getConfigValue(settings, keyPrefix + NAME);
                 if (value == null) break;
                 segmentConfigList.add(parse(namePrefix, keyPrefix, settings));
             }
@@ -186,12 +200,18 @@ public class Config {
 
         EnStemType enStem;
 
-        Analysis(String name) {
+        boolean needStopWord;
+
+        AnalysisConfig(String name) {
             super(name);
         }
 
         public EnStemType getEnStem() {
             return enStem;
+        }
+
+        public boolean isNeedStopWord() {
+            return needStopWord;
         }
     }
 
@@ -214,46 +234,50 @@ public class Config {
 
     private final Supplier<CjkLexicon> cjkLexicon;
 
-    private final List<Analysis> segmentConfigList;
+    private final Map<String, AnalysisConfig> segmentConfigMap;
 
     private final CharArraySet stopWords;
 
-    private final List<Path> lexiconPaths;
-
-    @Inject
-    public Config(Environment env, Settings settings, ThreadPool threadPool) {
-        String value = settings.get(CONFIG_FILE_PATH_KEY);
-        final Path benzConfigDirPath = env.configFile().resolve(PLUGIN_NAME);
+    Config(Settings settings) {
+        final Path esConfigDir;
+        if (Environment.PATH_CONF_SETTING.exists(settings)) {
+            esConfigDir = PathUtils.get(cleanPath(Environment.PATH_CONF_SETTING.get(settings)));
+        } else {
+            esConfigDir = PathUtils.get(cleanPath(Environment.PATH_HOME_SETTING.get(settings))).resolve("config");
+        }
+        String value = getConfigValue(settings, CONFIG_FILE_PATH_KEY);
+        final Path benzConfigDirPath = esConfigDir.resolve(PLUGIN_NAME);
         if (!"es".equalsIgnoreCase(value) && !"elasticsearch".equalsIgnoreCase(value)) {
             Path configPath = SearchStringUtils.isEmpty(value) ? benzConfigDirPath.resolve(DEFAULT_CONFIG_FILE_NAME)
                     : Paths.get(value);
-            settings = Settings.builder()
-                    .loadFromPath(configPath)
-                    .build();
-        }
-        value = settings.get(LEXICON_FILE_PATH_KEY);
-        this.lexiconPaths = getLexiconPaths(value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME) : Paths.get(value));
-        final RootNodeType rootNodeType = settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK : RootNodeType.ALL;
-        this.cjkLexicon = new AsyncInit<>(threadPool.generic(), new Supplier<CjkLexicon>() {
-
-            @Override
-            public CjkLexicon get() {
-                return new CjkLexicon(rootNodeType, lexiconPaths);
+            try {
+                settings = Settings.builder()
+                        .loadFromPath(configPath)
+                        .build();
+            } catch (IOException e) {
+                log.error("load config path: " + configPath + " exception", e);
+                throw new RuntimeException("load config path: " + configPath + " exception", e);
             }
-        });
-        this.segmentConfigList = Collections.unmodifiableList(Analysis.parse(settings));
-        stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
+        }
+        value = getConfigValue(settings, LEXICON_FILE_PATH_KEY);
+        List<Path> lexiconPaths = getLexiconPaths(value == null ? benzConfigDirPath.resolve(DEFAULT_LEXICON_FILE_NAME) : Paths.get(value));
+        final RootNodeType rootNodeType = settings.getAsBoolean(LEXICON_ONLY_CJK_KEY, true) ? RootNodeType.CJK : RootNodeType.ALL;
+        this.segmentConfigMap = Collections.unmodifiableMap(AnalysisConfig.parse(settings).stream().collect(HashMap::new, (map, a) -> map.put(a.getName(), a), HashMap::putAll));
+        this.cjkLexicon = new AsyncInit<>(() -> new CjkLexicon(rootNodeType, lexiconPaths), AsyncInit.DEFAULT_WAIT_TIMEOUT);
+        this.stopWords = new CharArraySet(StopWords.instance().allStopwords(), false);
+    }
+
+    /**
+     * 配置文件是yml的, 所有的字符串在yml解析的时候做了term
+     */
+    private static String getConfigValue(Settings settings, String key) {
+        return SearchStringUtils.filterString(settings.get(key));
     }
 
     private List<Path> getLexiconPaths(Path lexiconPath) {
         if (Files.isDirectory(lexiconPath, LinkOption.NOFOLLOW_LINKS)) {
             try {
-                return ImmutableList.copyOf(FileSystemUtils.files(lexiconPath, new DirectoryStream.Filter<Path>() {
-                    @Override
-                    public boolean accept(Path p) throws IOException {
-                        return p.startsWith("words") && p.endsWith(".dic");
-                    }
-                }));
+                return Arrays.asList(FileSystemUtils.files(lexiconPath, p -> p.startsWith("words") && p.endsWith(".dic")));
             } catch (IOException e) {
                 log.error("load lexicon path: " + lexiconPath + " directory files have exception", e);
                 throw new SettingsException("load lexicon path: " + lexiconPath + " directory files have exception", e);
@@ -267,30 +291,19 @@ public class Config {
         return cjkLexicon;
     }
 
-    public List<Analysis> getSegmentConfigList() {
-        return segmentConfigList;
+    public Collection<AnalysisConfig> getSegmentConfig() {
+        return segmentConfigMap.values();
     }
 
     /**
      * 获取指定分词器名称的配置
      */
-    public Analysis getSegmentConfig(String analyzerName) {
-        for (Analysis a : segmentConfigList) {
-            if (a.getName().equals(analyzerName)) {
-                return a;
-            }
-        }
-        throw new IllegalArgumentException("can not find analyzer named " + analyzerName);
+    public AnalysisConfig getSegmentConfig(String analyzerName) {
+        return Objects.requireNonNull(segmentConfigMap.get(analyzerName), "can not find analyzer named " + analyzerName);
     }
 
     public CharArraySet getStopWords() {
         return stopWords;
     }
 
-    /**
-     * @return Immutable List
-     */
-    public List<Path> getLexiconPaths() {
-        return lexiconPaths;
-    }
 }

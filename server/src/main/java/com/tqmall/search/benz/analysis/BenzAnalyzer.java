@@ -3,9 +3,10 @@ package com.tqmall.search.benz.analysis;
 import com.tqmall.search.benz.Config;
 import com.tqmall.search.commons.nlp.Segment;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.core.StopFilter;
+
 
 import java.io.Reader;
 
@@ -34,12 +35,13 @@ public class BenzAnalyzer extends Analyzer {
     protected TokenStreamComponents createComponents(String fieldName) {
         final Tokenizer tokenizer = new BenzTokenizer(segment);
         TokenStream result = tokenizer;
-        // LowerCaseFilter is not needed, BenzCjkCharFilter has convert to low
-        Config.EnStemType enStem = config.getSegmentConfig(segment.getName()).getEnStem();
-        if (enStem != null) {
-            result = enStem.wrapper(result);
+        Config.AnalysisConfig analysisConfig = config.getSegmentConfig(segment.getName());
+        if (analysisConfig.getEnStem() != null) {
+            result = analysisConfig.getEnStem().wrapper(result);
         }
-        result = new StopFilter(result, config.getStopWords());
+        if (analysisConfig.isNeedStopWord()) {
+            result = new StopFilter(result, config.getStopWords());
+        }
         return new TokenStreamComponents(tokenizer, result);
     }
 }

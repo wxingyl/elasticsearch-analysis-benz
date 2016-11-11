@@ -1,9 +1,9 @@
 package com.tqmall.search.benz.action;
 
-import com.google.common.collect.Lists;
 import org.elasticsearch.action.ActionRequestBuilder;
 import org.elasticsearch.client.ElasticsearchClient;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
@@ -28,7 +28,7 @@ public class PinyinRequestBuilder extends ActionRequestBuilder<PinyinRequest, Pi
     }
 
     public PinyinRequestBuilder appendFlags(AppendFlag... appendFlags) {
-        request.appendFlags(EnumSet.copyOf(Lists.newArrayList(appendFlags)));
+        request.appendFlags(EnumSet.copyOf(Arrays.asList(appendFlags)));
         return this;
     }
 

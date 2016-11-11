@@ -1,10 +1,7 @@
 package com.tqmall.search.benz;
 
-import org.elasticsearch.common.logging.ESLogger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.common.logging.Loggers;
-import org.elasticsearch.common.logging.jdk.JdkESLoggerFactory;
-import org.elasticsearch.plugins.Plugin;
 import org.slf4j.helpers.MarkerIgnoringBase;
 
 /**
@@ -14,28 +11,13 @@ import org.slf4j.helpers.MarkerIgnoringBase;
  * @see ESLoggerFactory
  */
 public class BenzLogger extends MarkerIgnoringBase {
-    /**
-     * {@link ESLogger}默认使用{@link JdkESLoggerFactory}
-     * {@link ESLoggerFactory}中默认使用jkd, 再检查是否支持log4j, 如果还没有再检查slf4j, 如果该函数执行, 则表明log4j是没有的, 所以不用考虑log4j
-     */
-    private final static ESLoggerFactory DEFAULT_LOG_FACTORY;
 
-    static {
-        ESLoggerFactory factory;
-        try {
-            factory = BenzLogger.class.getClassLoader().equals(Plugin.class.getClassLoader())
-                    ? new JdkESLoggerFactory() : null;
-        } catch (RuntimeException e) {
-            //说明不是同一个classLoad
-            factory = null;
-        }
-        DEFAULT_LOG_FACTORY = factory;
-    }
+    private static final long serialVersionUID = 4992159644697380619L;
 
-    private final ESLogger logger;
+    private final Logger logger;
 
     public BenzLogger(String name) {
-        logger = DEFAULT_LOG_FACTORY == null ? Loggers.getLogger(name) : DEFAULT_LOG_FACTORY.newInstance(name);
+        logger = ESLoggerFactory.getLogger(name);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class ConfigTest {
         Settings settings = Settings.builder()
                 .loadFromPath(configPath)
                 .build();
-        List<Config.Analysis> list = Config.Analysis.parse(settings);
+        List<Config.AnalysisConfig> list = Config.AnalysisConfig.parse(settings);
         Assert.assertEquals(4, list.size());
         for (SegmentConfig s : list) {
             System.out.println(s);

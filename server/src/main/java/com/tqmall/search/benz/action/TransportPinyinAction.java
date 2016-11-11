@@ -1,7 +1,5 @@
 package com.tqmall.search.benz.action;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.tqmall.search.commons.nlp.NlpConst;
 import com.tqmall.search.commons.nlp.PinyinConvert;
 import com.tqmall.search.commons.nlp.TraditionToSimple;
@@ -15,6 +13,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.TransportService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class TransportPinyinAction extends HandledTransportAction<PinyinRequest,
 
     @Inject
     public TransportPinyinAction(Settings settings, ThreadPool threadPool, TransportService transportService, ActionFilters actionFilters, IndexNameExpressionResolver indexNameExpressionResolver) {
-        super(settings, PinyinAction.NAME, threadPool, transportService, actionFilters, indexNameExpressionResolver, PinyinRequest.class);
+        super(settings, PinyinAction.NAME, threadPool, transportService, actionFilters, indexNameExpressionResolver, PinyinRequest::new);
     }
 
     @Override
@@ -57,12 +56,8 @@ public class TransportPinyinAction extends HandledTransportAction<PinyinRequest,
         if (request.needSingleCharPy()) {
             List<PinyinConvert.CjkChar> list = PinyinConvert.instance().convert(text);
             if (!CommonsUtils.isEmpty(list)) {
-                cjkCharacterPys = Lists.transform(list, new Function<PinyinConvert.CjkChar, PinyinResponse.CjkCharacter>() {
-                    @Override
-                    public PinyinResponse.CjkCharacter apply(PinyinConvert.CjkChar cc) {
-                        return new PinyinResponse.CjkCharacter(cc.getCharacter(), cc.getPosition(), cc.getPinyin());
-                    }
-                });
+                cjkCharacterPys = list.stream().collect(ArrayList::new, (rl, cc) -> rl.add(new PinyinResponse.CjkCharacter(cc.getCharacter(), cc.getPosition(), cc.getPinyin())),
+                        ArrayList::addAll);
             }
         }
         if (request.needFirstLetter()) {

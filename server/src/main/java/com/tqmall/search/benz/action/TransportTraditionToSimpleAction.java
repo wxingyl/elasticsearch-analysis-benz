@@ -21,7 +21,7 @@ public class TransportTraditionToSimpleAction extends HandledTransportAction<Tra
     public TransportTraditionToSimpleAction(Settings settings, ThreadPool threadPool, TransportService transportService,
                                             ActionFilters actionFilters, IndexNameExpressionResolver indexNameExpressionResolver) {
         super(settings, TraditionToSimpleAction.NAME, threadPool, transportService, actionFilters,
-                indexNameExpressionResolver, TraditionToSimpleRequest.class);
+                indexNameExpressionResolver, TraditionToSimpleRequest::new);
     }
 
     @Override

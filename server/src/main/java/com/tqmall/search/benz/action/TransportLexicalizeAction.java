@@ -5,12 +5,13 @@ import com.tqmall.search.commons.analyzer.CjkLexicon;
 import com.tqmall.search.commons.analyzer.TokenType;
 import com.tqmall.search.commons.nlp.PinyinConvert;
 import com.tqmall.search.commons.utils.CommonsUtils;
+import org.elasticsearch.action.FailedNodeException;
+import org.elasticsearch.action.admin.cluster.stats.ClusterStatsAction;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.nodes.BaseNodeRequest;
 import org.elasticsearch.action.support.nodes.TransportNodesAction;
-import org.elasticsearch.cluster.ClusterName;
-import org.elasticsearch.cluster.ClusterService;
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
+import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -20,10 +21,8 @@ import org.elasticsearch.threadpool.ThreadPool;
 import org.elasticsearch.transport.TransportService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * Created by xing on 16/3/24.
@@ -35,24 +34,16 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
     private final Config config;
 
     @Inject
-    public TransportLexicalizeAction(Settings settings, ClusterName clusterName, ThreadPool threadPool, ClusterService clusterService,
-                                     TransportService transportService, ActionFilters actionFilters, IndexNameExpressionResolver indexNameExpressionResolver,
-                                     Config config) {
-        super(settings, LexicalizeAction.NAME, clusterName, threadPool, clusterService, transportService, actionFilters, indexNameExpressionResolver,
-                LexicalizeRequest.class, NodeInfoRequest.class, ThreadPool.Names.MANAGEMENT);
+    public TransportLexicalizeAction(Settings settings, ThreadPool threadPool, ClusterService clusterService, TransportService transportService,
+                                     ActionFilters actionFilters, IndexNameExpressionResolver indexNameExpressionResolver, Config config) {
+        super(settings, ClusterStatsAction.NAME, threadPool, clusterService, transportService, actionFilters, indexNameExpressionResolver,
+                LexicalizeRequest::new, TransportLexicalizeAction.NodeInfoRequest::new, ThreadPool.Names.MANAGEMENT, LexicalizeResponse.Node.class);
         this.config = config;
     }
 
     @Override
-    protected LexicalizeResponse newResponse(LexicalizeRequest request, AtomicReferenceArray nodesResponses) {
-        List<LexicalizeResponse.Node> nodes = new ArrayList<>(nodesResponses.length());
-        for (int i = nodesResponses.length() - 1; i >= 0; i--) {
-            Object resp = nodesResponses.get(i);
-            if (resp instanceof LexicalizeResponse.Node) {
-                nodes.add((LexicalizeResponse.Node) resp);
-            }
-        }
-        return new LexicalizeResponse(clusterName, nodes.toArray(new LexicalizeResponse.Node[nodes.size()]));
+    protected LexicalizeResponse newResponse(LexicalizeRequest request, List<LexicalizeResponse.Node> nodes, List<FailedNodeException> failures) {
+        return new LexicalizeResponse(clusterService.getClusterName(), nodes, failures);
     }
 
     @Override
@@ -110,15 +101,15 @@ public class TransportLexicalizeAction extends TransportNodesAction<LexicalizeRe
         return false;
     }
 
-    public static class NodeInfoRequest extends BaseNodeRequest {
+    static class NodeInfoRequest extends BaseNodeRequest {
 
         private LexicalizeRequest request;
 
-        public NodeInfoRequest() {
+        NodeInfoRequest() {
         }
 
         NodeInfoRequest(String nodeId, LexicalizeRequest request) {
-            super(request, nodeId);
+            super(nodeId);
             this.request = request;
         }
 

@@ -1,7 +1,6 @@
 package com.tqmall.search.benz.analysis;
 
 import com.tqmall.search.commons.nlp.SegmentFilters;
-import org.elasticsearch.index.analysis.CharFilterFactory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -15,8 +14,6 @@ import java.io.Reader;
  * @see SegmentFilters#charConvert(char)
  */
 public class BenzCjkCharFilter extends Reader {
-
-    public static final String NAME = "benz_cjk";
 
     private Reader input;
 
@@ -40,18 +37,5 @@ public class BenzCjkCharFilter extends Reader {
     @Override
     public void close() throws IOException {
         input.close();
-    }
-
-    public static class Factory implements CharFilterFactory {
-
-        @Override
-        public String name() {
-            return NAME;
-        }
-
-        @Override
-        public Reader create(Reader tokenStream) {
-            return new BenzCjkCharFilter(tokenStream);
-        }
     }
 }

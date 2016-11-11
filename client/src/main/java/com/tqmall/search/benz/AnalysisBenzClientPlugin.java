@@ -3,10 +3,14 @@ package com.tqmall.search.benz;
 import com.tqmall.search.benz.action.LexicalizeAction;
 import com.tqmall.search.benz.action.PinyinAction;
 import com.tqmall.search.benz.action.TraditionToSimpleAction;
-import org.elasticsearch.action.ActionModule;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.action.ActionRequest;
+import org.elasticsearch.action.ActionResponse;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.plugins.ActionPlugin;
 import org.elasticsearch.plugins.Plugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xing on 16/3/24.
@@ -14,7 +18,7 @@ import org.elasticsearch.plugins.Plugin;
  *
  * @author xing
  */
-public class AnalysisBenzClientPlugin extends Plugin {
+public class AnalysisBenzClientPlugin extends Plugin implements ActionPlugin {
 
     /**
      * es 优先调用带{@link Settings}的构造方法, 虽然这个参数没用, 先放着吧
@@ -23,26 +27,12 @@ public class AnalysisBenzClientPlugin extends Plugin {
     }
 
     @Override
-    public String name() {
-        return "analysis-benz-client";
+    public List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> getActions() {
+        List<ActionHandler<? extends ActionRequest<?>, ? extends ActionResponse>> actionHandlers = new ArrayList<>();
+        actionHandlers.add(new ActionHandler<>(LexicalizeAction.INSTANCE, null));
+        actionHandlers.add(new ActionHandler<>(PinyinAction.INSTANCE, null));
+        actionHandlers.add(new ActionHandler<>(TraditionToSimpleAction.INSTANCE, null));
+        return actionHandlers;
     }
 
-    @Override
-    public String description() {
-        return "Benz Analysis Client for ElasticSearch";
-    }
-
-    /**
-     * Module初始化时会加载进来,通过反射调用的
-     */
-    public void onModule(ActionModule module) {
-        module.registerAction(LexicalizeAction.INSTANCE, null);
-        module.registerAction(PinyinAction.INSTANCE, null);
-        module.registerAction(TraditionToSimpleAction.INSTANCE, null);
-    }
-
-    public static TransportClient.Builder addToClient(TransportClient.Builder clientBuilder) {
-        clientBuilder.addPlugin(AnalysisBenzClientPlugin.class);
-        return clientBuilder;
-    }
 }
