@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +28,10 @@ public class ClientDemoTest {
 
     @BeforeClass
     public static void init() {
-        Settings settings = Settings.builder().put("client.transport.sniff", true).build();
+        Settings settings = Settings.builder()
+                .put("cluster.name", "elasticsearch")
+                .put("transport.type", "local")
+                .build();
         esClient = new TestClient(settings, Collections.singletonList(AnalysisBenzClientPlugin.class));
     }
 

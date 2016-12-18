@@ -13,9 +13,9 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 
 /**
- * date 2016/11/11 ÏÂÎç9:53
+ * date 2016/11/11 ä¸‹åˆ9:53
  *
- * @author ÉĞ³½
+ * @author å°šè¾°
  */
 public class TestClient extends TransportClient {
 
